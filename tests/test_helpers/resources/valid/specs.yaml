@@ -1,0 +1,19 @@
+name: "test-project"
+repo-url: "https://github.com/some-user/my-test-project"
+version: "0.1.0"
+build-stage:
+  strategy:
+    strict: true
+
+  steps:
+    - name: "Install dependencies"
+      command: "pip"
+      args: ["list"]
+      shell: "/bin/bash"
+      type: "build"
+
+    - name: "Run tests"
+      type: "test"
+      command: "pytest"
+      args: ["-v"]
+      shell: "/bin/zsh"
