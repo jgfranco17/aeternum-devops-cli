@@ -34,7 +34,7 @@ Aeternum can be installed using Poetry. Ensure you have Poetry installed on your
 1. Clone the repository
 
    ```shell
-   git clone https://github.com/jgfranco17/aeternum.git
+   git clone https://github.com/jgfranco17/aeternum-devops-cli.git
    cd aeternum
    ```
 

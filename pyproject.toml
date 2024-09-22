@@ -4,8 +4,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "aeternum"
-version = "0.0.5"
-description = "Python-based CLI tool for virtual test environments"
+version = "0.0.1"
+description = "Python-based CLI tool for DevOps automations"
 authors = ["Chino Franco <chino.franco@gmail.com>"]
 license = "MIT"
 readme = "README.md"
