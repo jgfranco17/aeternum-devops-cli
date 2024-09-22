@@ -23,7 +23,7 @@ class AeternumCliHandler(click.Group):
             return super().invoke(ctx)
 
         except AeternumBaseError as err:
-            logger.exception(err)
+            logger.error(err)
             click.secho(f"{err.help_text}", fg="yellow")
             sys.exit(err.exit_code)
 

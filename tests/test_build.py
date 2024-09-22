@@ -65,7 +65,7 @@ def test_build_step_failure(
 
 
 @patch("subprocess.run")
-def test_build_invalid_step(
+def test_build_invalid_spec_file(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     mocker: MockerFixture,
@@ -74,16 +74,9 @@ def test_build_invalid_step(
 ) -> None:
     """Tests aeternum doctor in the success case."""
     monkeypatch.chdir(tmp_path)
-    valid_spec_file = load_resources_dir("valid", "specs.yaml")
+    valid_spec_file = load_resources_dir("invalid_files", "specs.yaml")
     shutil.copy(valid_spec_file, Path(tmp_path, "specs.yaml"))
 
-    successful_subprocess_exec = Mock()
-    successful_subprocess_exec.configure_mock(
-        **{"returncode": 0, "stdout.decode.return_value": "Ran step successfully"}
-    )
-    mock_subproc_run.side_effect = [
-        successful_subprocess_exec,
-        successful_subprocess_exec,
-    ]
     result = runner.run_cli(["build"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
+    assert "Failed to load project spec from specs.yaml" in result.stderr
