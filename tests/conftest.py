@@ -36,6 +36,6 @@ def mock_datetime() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_docker() -> Generator[MagicMock, None, None]:
-    with patch("aeternum.models.docker") as mock_docker:
-        yield mock_docker
+def mock_perf_counter() -> Generator[MagicMock, None, None]:
+    with patch("aeternum.models.perf_counter") as mock_datetime:
+        yield mock_datetime

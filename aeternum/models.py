@@ -13,7 +13,7 @@ from colorama import Fore, Style
 from pydantic import BaseModel, Field, ValidationError
 from tabulate import tabulate
 
-from .constants import StepType
+from .constants import StepExecutionStatus, StepType
 from .errors import AeternumInputError, AeternumRuntimeError
 
 logger = logging.getLogger(__name__)
@@ -133,6 +133,51 @@ class ProjectSpec(BaseModel):
                 f"Failed to load project spec from {filepath}"
             ) from e
 
+    def __create_log_output(self, steps: List[AutomationStep], duration: float):
+        """Write execution log to file.
+
+        Args:
+            steps (List[AutomationStep]): Automation steps executed
+            duration (float): Total dura
+        """
+        timestamp = dt.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        file_name = f"aeternum-execution_{timestamp}"
+        output_file = Path(file_name).with_suffix(".log")
+        log_summary_rows = []
+        step_counts_by_status = {
+            StepExecutionStatus.COMPLETED: 0,
+            StepExecutionStatus.FAILED: 0,
+            StepExecutionStatus.SKIPPED: 0,
+        }
+        for idx, (step, status) in enumerate(steps, start=1):
+            command = (
+                step.command
+                if not step.args
+                else f"{step.command} {' '.join(step.args)}"
+            )
+            log_summary_rows.append([idx, step.name, step.shell, command, status])
+            step_counts_by_status[status] += 1
+
+        log_summary_headers = ["#", "NAME", "SHELL", "COMMAND", "STATUS"]
+        step_summary_report = tabulate(
+            log_summary_rows,
+            headers=log_summary_headers,
+            showindex=False,
+            numalign="center",
+            tablefmt="simple",
+        )
+        with open(str(output_file.resolve()), "w") as file:
+            file.write(f"Project: {self.name}\n")
+            file.write(f"Version: {self.version}\n")
+            file.write(f"Execution duration: {duration:.3f}s\n\n")
+            file.write("Step Summary:\n")
+            for status, count in step_counts_by_status.items():
+                file.write(f"{status}: {count}\n")
+            file.write("\n")
+            file.write("Build Output:\n")
+            file.write(step_summary_report)
+            file.write("\n")
+
     def build(self, quiet: bool, save_output: bool) -> None:
         """Run the build steps for the project.
 
@@ -164,16 +209,16 @@ class ProjectSpec(BaseModel):
                 )
                 result = step.run()
                 if result.exit_code != 0:
-                    icon = f"{Fore.RED}{Style.BRIGHT}FAILED{Style.RESET_ALL}"
+                    icon = f"{Fore.RED}{Style.BRIGHT}{StepExecutionStatus.FAILED}{Style.RESET_ALL}"
                     summary.append([idx, step.name, icon])
-                    executed_steps.append((step, "FAILED"))
+                    executed_steps.append((step, StepExecutionStatus.FAILED))
                     failed_step = result
                     break
                 if not quiet:
                     click.echo(result.stdout)
-                icon = f"{Fore.GREEN}{Style.BRIGHT}COMPLETED{Style.RESET_ALL}"
+                icon = f"{Fore.GREEN}{Style.BRIGHT}{StepExecutionStatus.COMPLETED}{Style.RESET_ALL}"
                 summary.append([idx, step.name, icon])
-                executed_steps.append((step, "COMPLETED"))
+                executed_steps.append((step, StepExecutionStatus.COMPLETED))
                 builds.update(1)
 
         execution_end_time = perf_counter()
@@ -195,38 +240,12 @@ class ProjectSpec(BaseModel):
             )
         )
 
+        if save_output:
+            log_file = self.__create_log_output(executed_steps, execution_duration)
+            click.echo(f"\nStep execution summary saved to {log_file}")
+
         if failed_step:
             raise AeternumRuntimeError(
                 f"Step '{failed_step.name}' failed with exit code {failed_step.exit_code}:"
                 + f"\n{failed_step.stderr}"
             )
-
-        if save_output:
-            timestamp = dt.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            file_name = f"aeternum-execution_{timestamp}"
-            output_file = Path(file_name).with_suffix(".log")
-            log_summary_rows = []
-            for idx, (step, status) in enumerate(executed_steps, start=1):
-                command = (
-                    step.command
-                    if not step.args
-                    else f"{step.command} {' '.join(step.args)}"
-                )
-                log_summary_rows.append([idx, step.name, step.shell, command, status])
-            log_summary_headers = ["#", "NAME", "SHELL", "COMMAND", "STATUS"]
-            step_summary_report = tabulate(
-                log_summary_rows,
-                headers=log_summary_headers,
-                showindex=False,
-                numalign="center",
-                tablefmt="simple",
-            )
-            with open(str(output_file.resolve()), "w") as file:
-                file.write(f"Project: {self.name}\n")
-                file.write(f"Version: {self.version}\n")
-                file.write(f"Timestamp: {timestamp}\n")
-                file.write(f"Execution duration: {execution_duration:.3f}s\n\n")
-                file.write("Build Output:\n")
-                file.write(step_summary_report)
-                file.write("\n")
-            click.echo(f"\nStep execution summary saved to {output_file}")

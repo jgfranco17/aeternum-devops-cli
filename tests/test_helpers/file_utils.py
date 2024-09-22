@@ -21,12 +21,12 @@ def load_resources_dir(*filepath: Tuple[str]) -> Path:
     return Path(Path(__file__).parent.resolve(), "resources", *filepath)
 
 
-def assert_files(test_file: str, reference_file: str) -> None:
+def assert_file_content(test_file: Path, reference_file: Path) -> None:
     """Compare 2 file by asserting all lines.
 
     Args:
-        test_file (str): generated file
-        reference_file (str): reference to compare against
+        test_file (Path): generated file
+        reference_file (Path): reference to compare against
 
     Raises:
         AssertionError: if the generated file does not match the reference
@@ -36,23 +36,22 @@ def assert_files(test_file: str, reference_file: str) -> None:
 
     with open(test_file) as actual, open(reference_file) as reference:
         test_lines = actual.readlines()
-        reference_lines = reference.readlines()
+        ref_lines = reference.readlines()
 
-        # Verify that the two files are of equal length
-        if len(reference_lines) != len(test_lines):
-            raise AssertionError(
-                f"{reference_file} has {len(reference_lines)} lines vs "
-                + f"{test_file} has {len(test_lines)}; cannot compare!"
-                + f"\n\n--- {reference_file} ---\n{''.join(reference_lines)}"
-                + f"\n\n--- {test_file} ---\n{''.join(test_lines)}"
-            )
+    # Verify that the two files are of equal length
+    if len(ref_lines) != len(test_lines):
+        raise AssertionError(
+            f"{reference_file} has {len(ref_lines)} lines vs "
+            + f"{test_file} has {len(test_lines)}; cannot compare!"
+            + f"\n\n--- {reference_file} ---\n{''.join(ref_lines)}"
+            + f"\n\n--- {test_file} ---\n{''.join(test_lines)}"
+        )
 
-        # Compare line by line
-        for line_number, (ref, test) in enumerate(zip(reference_lines, test_lines)):
-            if ref != test:
-                print(
-                    f"RTeference file: {reference_file} <==> Generated file {test_file}"
-                )
-                print(f"Not matching line {line_number} =>")
-                print(f"  Ref: {ref}")
-                print(f"  Gen: {test}")
+    # Compare line by line
+    for idx, (ref, test) in enumerate(zip(ref_lines, test_lines), start=1):
+        assert ref == test, (
+            f"Reference file: {reference_file} <==> Generated file {test_file}, "
+            + f"mismatch on line {idx}\n\n"
+            + f"  Ref: {ref}\n"
+            + f"  Gen: {test}\n"
+        )

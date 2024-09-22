@@ -1,0 +1,15 @@
+Project: test-project
+Version: 0.1.0
+Time: 2024-09-23 00:27:30
+Execution duration: 0.569s
+
+Step Summary:
+COMPLETED: 2
+FAILED: 0
+SKIPPED: 0
+
+Build Output:
+ #   NAME                  SHELL      COMMAND    STATUS
+---  --------------------  ---------  ---------  ---------
+ 1   Install dependencies  /bin/bash  pip list   COMPLETED
+ 2   Run tests             /bin/zsh   pytest -v  COMPLETED
