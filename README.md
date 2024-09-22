@@ -5,7 +5,7 @@ manage your test containers easily.
 
 ## Project Code Coverage
 
-Coverage: 80%
+Coverage: 97.44%
 
 ## Features
 

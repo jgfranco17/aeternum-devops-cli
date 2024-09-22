@@ -115,6 +115,7 @@ jobs:
 
       - name: Run coverage and generate report XML
         run: |
+          just coverage
           just get-project-coverage
 
       - name: Update README with code coverage
