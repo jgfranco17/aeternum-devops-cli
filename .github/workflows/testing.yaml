@@ -118,13 +118,6 @@ jobs:
           just coverage
           just get-project-coverage
 
-      - name: Install Github CLI
-        env:
-          GITHUB_TOKEN: ${{ secrets.USER_GITHUB_TOKEN }}
-        run: |
-          sudo apt-get install gh
-          echo "${{ secrets.USER_GITHUB_TOKEN }}" | gh auth login --with-token
-
       - name: Update README with code coverage
         if: success()
         shell: bash
