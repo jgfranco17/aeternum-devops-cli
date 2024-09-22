@@ -6,7 +6,6 @@ from enum import Enum
 class ProjectFiles:
     """Constants for generated files."""
 
-    AETERNUM_CONFIG_DIR: str = ".aeternum"
     SPEC_FILE: str = "specs.yaml"
 
 

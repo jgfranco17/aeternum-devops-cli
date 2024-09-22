@@ -16,7 +16,6 @@ def test_load_from_yaml_success():
     assert project.repo_url == "https://github.com/some-user/my-test-project"
     assert project.version == "0.1.0"
     assert project.strict_build is True
-    assert str(project.get_default_spec_path()) == f".aeternum{os.sep}specs.yaml"
     for step in project.build_stage.steps:
         assert isinstance(step, AutomationStep)
         assert step.type in ["build", "test", "deploy"]

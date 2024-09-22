@@ -105,9 +105,6 @@ class ProjectSpec(BaseModel):
         """
         return self.build_stage.strategy.strict
 
-    def get_default_spec_path(self) -> Path:
-        return Path(ProjectFiles.AETERNUM_CONFIG_DIR, ProjectFiles.SPEC_FILE)
-
     @classmethod
     def load_from_yaml(cls, filepath: Path) -> "ProjectSpec":
         """Build a ProjectSpec from a YAML file."""

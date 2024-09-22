@@ -21,9 +21,7 @@ def test_build_success(
     """Tests aeternum doctor in the success case."""
     monkeypatch.chdir(tmp_path)
     valid_spec_file = load_resources_dir("valid", "specs.yaml")
-    spec_dir = Path(tmp_path, ".aeternum")
-    os.makedirs(spec_dir)
-    shutil.copy(valid_spec_file, Path(spec_dir, "specs.yaml"))
+    shutil.copy(valid_spec_file, Path(tmp_path, "specs.yaml"))
 
     successful_subprocess_exec = Mock()
     successful_subprocess_exec.configure_mock(
@@ -48,9 +46,7 @@ def test_build_step_failure(
     """Tests aeternum doctor in the success case."""
     monkeypatch.chdir(tmp_path)
     valid_spec_file = load_resources_dir("valid", "specs.yaml")
-    spec_dir = Path(tmp_path, ".aeternum")
-    os.makedirs(spec_dir)
-    shutil.copy(valid_spec_file, Path(spec_dir, "specs.yaml"))
+    shutil.copy(valid_spec_file, Path(tmp_path, "specs.yaml"))
 
     successful_subprocess_exec = Mock()
     successful_subprocess_exec.configure_mock(
@@ -79,9 +75,7 @@ def test_build_invalid_step(
     """Tests aeternum doctor in the success case."""
     monkeypatch.chdir(tmp_path)
     valid_spec_file = load_resources_dir("valid", "specs.yaml")
-    spec_dir = Path(tmp_path, ".aeternum")
-    os.makedirs(spec_dir)
-    shutil.copy(valid_spec_file, Path(spec_dir, "specs.yaml"))
+    shutil.copy(valid_spec_file, Path(tmp_path, "specs.yaml"))
 
     successful_subprocess_exec = Mock()
     successful_subprocess_exec.configure_mock(

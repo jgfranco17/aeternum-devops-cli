@@ -12,16 +12,13 @@ from aeternum.models import ProjectSpec
 logger = logging.getLogger(__name__)
 
 
-DEFAULT_SPEC_PATH = Path(ProjectFiles.AETERNUM_CONFIG_DIR, ProjectFiles.SPEC_FILE)
-
-
 @click.command("build")
 @click.option(
     "--file",
     "-f",
     type=Path,
     help="Path to spec file",
-    default=DEFAULT_SPEC_PATH,
+    default=ProjectFiles.SPEC_FILE,
 )
 @click.option(
     "--quiet",
