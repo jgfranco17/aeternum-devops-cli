@@ -1,19 +1,13 @@
 # Aeternum
 
 Aeternum is a powerful and user-friendly command-line interface (CLI) tool designed to help you
-manage your test containers easily.
+define and run build step automations for CI/CD in your projects.
+
+In future iterations, a companion API will be available and integrated into this tool.
 
 ## Project Code Coverage
 
-Coverage: 97.44%
-
-## Features
-
-With Aeternum, you can...
-
-- Create Docker images
-- Create Virtualbox VMs
-- List available images and VMs
+![Coverage](https://img.shields.io/badge/coverage-00.00-green?style=for-the-badge)
 
 ## Development Setup
 
@@ -22,7 +16,6 @@ With Aeternum, you can...
 Before getting started on development for this project, install the following on your local machine:
 
 - [Python 3.10](https://www.python.org/downloads/) or above
-- [Docker](https://docs.docker.com/engine/install/)
 
 Additional installs; optional, for developer convenience
 
@@ -39,6 +32,12 @@ Aeternum can be installed using Poetry. Ensure you have Poetry installed on your
    ```
 
 2. Install dependencies
+
+   ```shell
+   poetry install
+   ```
+
+3. Use a virtual environment for development
 
    ```shell
    poetry install
