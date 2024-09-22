@@ -1,7 +1,5 @@
 import logging
-import os
 from pathlib import Path
-from typing import List
 
 import click
 
@@ -27,7 +25,13 @@ logger = logging.getLogger(__name__)
     help="If passed, output from build steps will not be printed out",
     default=False,
 )
-def build_project(file: str, quiet: bool) -> None:
+@click.option(
+    "--save-output",
+    is_flag=True,
+    help="Save execution output to file",
+    default=False,
+)
+def build_project(file: str, quiet: bool, save_output: bool) -> None:
     """Initialize and build a project from specification file."""
     project = ProjectSpec.load_from_yaml(file)
     logger.info(f"Loaded project: {project.name}")
@@ -38,4 +42,4 @@ def build_project(file: str, quiet: bool) -> None:
                 f"No test steps found in {project.name} build stage"
             )
 
-    project.build(quiet)
+    project.build(quiet, save_output)

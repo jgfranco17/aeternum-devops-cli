@@ -1,17 +1,19 @@
-import inspect
 import os
 from pathlib import Path
-from typing import Any, List, Tuple, Union
-from unittest.mock import MagicMock
-
-from pytest_mock import MockerFixture
+from typing import Tuple, Union
 
 
-def assert_files_created(working_dir: Union[str, Path], files: List[str]) -> None:
+def assert_files_created(working_dir: Union[str, Path], *files: Tuple[str]) -> None:
     """Assert that the expected files to be generated are created."""
+    file_contents = list(
+        map(lambda s: f"- {s.relative_to(working_dir)}", Path(working_dir).iterdir())
+    )
+    contents_list = "\n".join(file_contents)
     for file in files:
         full_path = Path(os.path.join(working_dir, file))
-        assert full_path.exists(), f"Templated file '{str(full_path)}' was not created"
+        assert (
+            full_path.exists()
+        ), f"File '{file}' not created.\nFound {len(file_contents)} files:\n{contents_list}"
 
 
 def load_resources_dir(*filepath: Tuple[str]) -> Path:
