@@ -1,6 +1,6 @@
 import os
 import re
-from xml.etree import ElementTree as ET
+import xml.etree.ElementTree as ET
 
 
 def extract_coverage_from_xml(file_path: str) -> float:
@@ -8,7 +8,7 @@ def extract_coverage_from_xml(file_path: str) -> float:
     tree = ET.parse(file_path)
     root = tree.getroot()
     coverage = root.attrib.get("line-rate")
-    return float(coverage) * 100  # Convert to percentage
+    return float(coverage) * 100
 
 
 def update_readme(readme_path: str, coverage: float):
