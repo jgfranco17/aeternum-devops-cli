@@ -7,7 +7,7 @@ In future iterations, a companion API will be available and integrated into this
 
 ## Project Code Coverage
 
-![Coverage](https://img.shields.io/badge/coverage-00.00-green?style=for-the-badge)
+![Coverage](https://img.shields.io/badge/coverage-100.00-green?style=for-the-badge)
 
 ## Development Setup
 

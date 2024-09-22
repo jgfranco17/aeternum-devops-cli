@@ -78,9 +78,6 @@ class BuildStage(BaseModel):
                     test_count += 1
                 case StepType.DEPLOY:
                     deploy_count += 1
-                case _:
-                    invalid_count += 1
-                    click.echo(f"Unknown step type: {step.type}", err=True)
 
         return ValidationResult(
             build_step_count=build_count,

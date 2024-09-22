@@ -9,7 +9,7 @@ from tests.test_helpers.file_utils import load_resources_dir
 
 
 def test_load_from_yaml_success():
-    spec_file = load_resources_dir("valid", "specs.yaml")
+    spec_file = load_resources_dir("valid", "aeternum.yaml")
     project = ProjectSpec.load_from_yaml(spec_file)
 
     assert project.name == "test-project"
@@ -23,15 +23,21 @@ def test_load_from_yaml_success():
 
 
 def test_load_from_yaml_defaults_success():
-    spec_file = load_resources_dir("minimal", "specs.yaml")
+    spec_file = load_resources_dir("minimal", "aeternum.yaml")
     project = ProjectSpec.load_from_yaml(spec_file)
     for step in project.build_stage.steps:
         # Default to bash shell
         assert step.shell is not "/bin/bash"
 
 
+def test_load_from_yaml_non_existent_file():
+    spec_file = load_resources_dir("non-existent.yaml")
+    with raises(AeternumInputError):
+        _ = ProjectSpec.load_from_yaml(spec_file)
+
+
 def test_load_from_yaml_invalid_file():
-    spec_file = load_resources_dir("valid_spec", "non-existent.yaml")
+    spec_file = load_resources_dir("invalid_files", "invalid-file-type.json")
     with raises(AeternumInputError):
         _ = ProjectSpec.load_from_yaml(spec_file)
 

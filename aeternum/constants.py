@@ -6,7 +6,7 @@ from enum import Enum
 class ProjectFiles:
     """Constants for generated files."""
 
-    SPEC_FILE: str = "specs.yaml"
+    SPEC_FILE: str = "aeternum.yaml"
 
 
 @dataclass(frozen=True)

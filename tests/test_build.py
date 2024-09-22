@@ -20,8 +20,8 @@ def test_build_success(
 ) -> None:
     """Tests aeternum doctor in the success case."""
     monkeypatch.chdir(tmp_path)
-    valid_spec_file = load_resources_dir("valid", "specs.yaml")
-    shutil.copy(valid_spec_file, Path(tmp_path, "specs.yaml"))
+    valid_spec_file = load_resources_dir("valid", "aeternum.yaml")
+    shutil.copy(valid_spec_file, Path(tmp_path, "aeternum.yaml"))
 
     successful_subprocess_exec = Mock()
     successful_subprocess_exec.configure_mock(
@@ -45,8 +45,8 @@ def test_build_step_failure(
 ) -> None:
     """Tests aeternum doctor in the success case."""
     monkeypatch.chdir(tmp_path)
-    valid_spec_file = load_resources_dir("valid", "specs.yaml")
-    shutil.copy(valid_spec_file, Path(tmp_path, "specs.yaml"))
+    valid_spec_file = load_resources_dir("valid", "aeternum.yaml")
+    shutil.copy(valid_spec_file, Path(tmp_path, "aeternum.yaml"))
 
     successful_subprocess_exec = Mock()
     successful_subprocess_exec.configure_mock(
@@ -74,9 +74,9 @@ def test_build_invalid_spec_file(
 ) -> None:
     """Tests aeternum doctor in the success case."""
     monkeypatch.chdir(tmp_path)
-    valid_spec_file = load_resources_dir("invalid_files", "specs.yaml")
-    shutil.copy(valid_spec_file, Path(tmp_path, "specs.yaml"))
+    valid_spec_file = load_resources_dir("invalid_files", "aeternum-no-tests.yaml")
+    shutil.copy(valid_spec_file, Path(tmp_path, "aeternum.yaml"))
 
     result = runner.run_cli(["build"])
     assert result.exit_code == 2
-    assert "Failed to load project spec from specs.yaml" in result.stderr
+    assert "No test steps found in test-project build stage" in result.stderr

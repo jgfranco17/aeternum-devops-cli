@@ -1,0 +1,19 @@
+name: "test-project"
+repo-url: "https://github.com/some-user/my-test-project"
+version: "0.1.0"
+build-stage:
+  strategy:
+    strict: true
+
+  steps:
+    - name: "Install dependencies"
+      command: "pip"
+      args: ["list"]
+      shell: "/bin/bash"
+      type: "build"
+
+    - name: "Run deployment"
+      type: "deploy"
+      command: "kubectl"
+      args: ["restart", "rollout"]
+      shell: "/bin/zsh"

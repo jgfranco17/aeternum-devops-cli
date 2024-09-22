@@ -1,0 +1,16 @@
+{
+  "name": "test-project",
+  "repo-url": "https://github.com/some-user/my-test-project",
+  "version": "0.1.0",
+  "build-stage": {
+    "strategy": {
+      "strict": true
+    },
+    "steps": {
+      "name": "Install dependencies",
+      "command": "pip",
+      "args": ["install", "-r", "requirements.txt"],
+      "type": "build"
+    }
+  }
+}
