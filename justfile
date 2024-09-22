@@ -30,5 +30,4 @@ coverage:
     poetry run coverage report -m
 
 get-project-coverage:
-    poetry run poetry run coverage xml --omit="*/__*.py,*/test_*.py"
-    python3 ./tools/parse_coverage.py
+    poetry run coverage xml --omit="*/__*.py,*/test_*.py"
