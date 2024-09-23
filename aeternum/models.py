@@ -15,6 +15,7 @@ from tabulate import tabulate
 
 from .constants import StepExecutionStatus, StepType
 from .errors import AeternumInputError, AeternumRuntimeError
+from .output import get_command_string
 
 logger = logging.getLogger(__name__)
 
@@ -37,9 +38,7 @@ class AutomationStep(BaseModel):
 
     def run(self) -> StepExecutionResult:
         """Run the build commands with a specified shell."""
-        cmd_exec = (
-            self.command if not self.args else f"{self.command} {' '.join(self.args)}"
-        )
+        cmd_exec = get_command_string(self.command, *self.args)
         full_cmd = [self.shell, "-c", cmd_exec]
         click.echo(f"Executing command: '{cmd_exec}'")
         result = subprocess.run(full_cmd, capture_output=True, text=True)

@@ -1,7 +1,7 @@
 import logging
-from typing import Iterable
+import subprocess
+from typing import Optional, Tuple
 
-import click
 from colorama import Fore, Style
 
 
@@ -17,3 +17,30 @@ class ColorHandler(logging.StreamHandler):
         color = colors.get(record.levelno, Fore.WHITE)
         record.msg = f"{color}{record.msg}{Style.RESET_ALL}"
         super().emit(record)
+
+
+def get_command_string(command: str, args: Optional[Tuple[str]]) -> str:
+    try:
+        cmd_exec = command if not args else f"{command} {' '.join(args)}"
+        return cmd_exec
+    except Exception as e:
+        logging.error(
+            f"Error generating command string (command='{command}', args={args}): {e}"
+        )
+
+
+def run_validation_command(command: str, *args: Tuple[str]) -> bool:
+    """Returns True if the command is available."""
+    try:
+        cmd = get_command_string(command, args)
+        result = subprocess.run(
+            ["/bin/bash", "-c", cmd],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        if result.returncode != 0:
+            raise ValueError(f"Command '{cmd}' failed")
+        return True
+    except (subprocess.CalledProcessError, ValueError):
+        return False
