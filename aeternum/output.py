@@ -20,13 +20,8 @@ class ColorHandler(logging.StreamHandler):
 
 
 def get_command_string(command: str, args: Optional[Tuple[str]]) -> str:
-    try:
-        cmd_exec = command if not args else f"{command} {' '.join(args)}"
-        return cmd_exec
-    except Exception as e:
-        logging.error(
-            f"Error generating command string (command='{command}', args={args}): {e}"
-        )
+    cmd_exec = command if not args else f"{command} {' '.join(args)}"
+    return cmd_exec
 
 
 def run_validation_command(command: str, *args: Tuple[str]) -> bool:

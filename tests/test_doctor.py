@@ -3,7 +3,7 @@ import shutil
 from pathlib import Path
 from unittest.mock import MagicMock, Mock, call, patch
 
-from pytest import LogCaptureFixture, MonkeyPatch
+from pytest import MonkeyPatch, raises
 from pytest_mock import MockerFixture
 
 from aeternum.doctor import (
@@ -105,4 +105,10 @@ def test_validate_requirements(mock_subproc_run: MagicMock):
     fixes_needed = validate_requirements(mock_requirements)
     assert (
         len(fixes_needed) == 1
-    ), f"No requirements should need fixing but found {len(fixes_needed)}"
+    ), f"Expected 1 requirement should need fixing but found {len(fixes_needed)}"
+
+
+def test_validate_requirements_invalid_input():
+    mock_requirements = ["some requirement"]
+    with raises(TypeError):
+        _ = validate_requirements(mock_requirements)
