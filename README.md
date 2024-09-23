@@ -15,6 +15,8 @@ In future iterations, a companion REST API will be available and integrated into
 
 ![Coverage](https://img.shields.io/badge/coverage-100.00-green?style=for-the-badge)
 
+See latest coverage report in GHA summaries: [coverage workflow](https://github.com/jgfranco17/aeternum-devops-cli/actions/workflows/testing.yaml)
+
 ## About
 
 ### Why Use Aeternum?
@@ -204,10 +206,10 @@ improving the documentation, your efforts are appreciated.
 ### How to Contribute
 
 1. Fork the repository.
-2. Create a new branch (git checkout -b feature/my-feature).
-3. Commit your changes (git commit -m 'Add new feature').
-4. Push to the branch (git push origin feature/my-feature).
-5. Create a pull request.
+2. Create a new branch (`git checkout -b feature/my-feature`).
+3. Commit your changes (`git commit -m 'Add new feature'`).
+4. Push to the branch (`git push origin feature/my-feature`).
+5. Create a [pull request](https://github.com/jgfranco17/aeternum-devops-cli/pulls).
 
 Make sure to include tests for any new functionality and to adhere to the code style
 guidelines in this repository.
