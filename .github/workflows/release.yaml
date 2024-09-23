@@ -73,21 +73,9 @@ jobs:
         run: |
           sudo apt-get install gh
 
-      - name: Fetch release notes
-        id: read-notes
-        run: |
-          NOTES=$(cat .github/release/${{ env.VERSION }}.md | base64)
-          echo "ENCODED_NOTES=$NOTES" >> $GITHUB_ENV
-
-      - name: Post release notes to summary
-        if: success()
-        run: |
-          cat .github/release/${{ env.VERSION }}.md >> $GITHUB_STEP_SUMMARY
-
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.USER_GITHUB_TOKEN }}
           VERSION: ${{ env.VERSION }}
         run: |
-          NOTES=$(echo "${{ env.ENCODED_NOTES }}" | base64 --decode)
-          gh release create "${{ env.VERSION }}" --title "${{ env.VERSION }}" --notes "${{ env.NOTES }}" dist/*
+          gh release create "${{ env.VERSION }}" --notes-file ".github/release/${{ env.VERSION }}.md" dist/*
