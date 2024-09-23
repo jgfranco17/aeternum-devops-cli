@@ -3,7 +3,7 @@
 Aeternum is a powerful and user-friendly command-line interface (CLI) tool designed to help you
 define and run build step automations for CI/CD in your projects.
 
-In future iterations, a companion API will be available and integrated into this tool.
+In future iterations, a companion REST API will be available and integrated into this tool.
 
 ## Project Code Coverage
 
@@ -28,7 +28,7 @@ Aeternum can be installed using Poetry. Ensure you have Poetry installed on your
 
    ```shell
    git clone https://github.com/jgfranco17/aeternum-devops-cli.git
-   cd aeternum
+   cd aeternum-devops-cli
    ```
 
 2. Install dependencies
@@ -40,14 +40,15 @@ Aeternum can be installed using Poetry. Ensure you have Poetry installed on your
 3. Use a virtual environment for development
 
    ```shell
-   poetry install
+   poetry shell
+   poetry run aeternum --version
    ```
 
 There is also a Docker implementation available.
 
 ```shell
-docker build -t aeternum .
-docker run --rm aeternum --version
+docker build -t aeternum:latest .
+docker run --rm aeternum:latest --version
 ```
 
 ## Usage
