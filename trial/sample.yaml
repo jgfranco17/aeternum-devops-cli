@@ -1,0 +1,25 @@
+name: "test-project"
+repo-url: "https://github.com/some-user/my-test-project"
+version: "0.1.0"
+build-stage:
+  strategy:
+    strict: true
+
+  steps:
+    - name: "List dependencies"
+      command: "pip"
+      args: ["list"]
+      shell: "/bin/bash"
+      type: "test"
+
+    - name: "Show directory contents"
+      type: "build"
+      command: "ls"
+      args: ["-la"]
+      shell: "/bin/zsh"
+
+    - name: "Show file contents"
+      type: "build"
+      command: "cat"
+      args: ["trial/sample.yaml"]
+      shell: "/bin/zsh"

@@ -1,0 +1,12 @@
+Project: test-project
+Version: 0.1.0
+Execution duration: 0.500s
+
+Step Summary:
+NOT EXECUTED: 2
+
+Build Output (DRY RUN):
+ #   NAME                  SHELL      COMMAND    STATUS
+---  --------------------  ---------  ---------  ------------
+ 1   Install dependencies  /bin/bash  pip list   NOT EXECUTED
+ 2   Run tests             /bin/zsh   pytest -v  NOT EXECUTED

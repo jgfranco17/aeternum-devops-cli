@@ -7,7 +7,7 @@ COMPLETED: 1
 FAILED: 1
 SKIPPED: 0
 
-Build Output:
+Build Output (STANDARD):
  #   NAME                  SHELL      COMMAND    STATUS
 ---  --------------------  ---------  ---------  ---------
  1   Install dependencies  /bin/bash  pip list   COMPLETED

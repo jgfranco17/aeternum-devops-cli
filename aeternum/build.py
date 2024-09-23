@@ -19,6 +19,12 @@ logger = logging.getLogger(__name__)
     default=ProjectFiles.SPEC_FILE,
 )
 @click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Get summary of build steps without running them",
+    default=False,
+)
+@click.option(
     "--quiet",
     "-q",
     is_flag=True,
@@ -31,7 +37,7 @@ logger = logging.getLogger(__name__)
     help="Save execution output to file",
     default=False,
 )
-def build_project(file: str, quiet: bool, save_output: bool) -> None:
+def build_project(file: str, dry_run: bool, quiet: bool, save_output: bool) -> None:
     """Initialize and build a project from specification file."""
     project = ProjectSpec.load_from_yaml(file)
     logger.info(f"Loaded project: {project.name}")
@@ -42,4 +48,4 @@ def build_project(file: str, quiet: bool, save_output: bool) -> None:
                 f"No test steps found in {project.name} build stage"
             )
 
-    project.build(quiet, save_output)
+    project.build(dry_run, quiet, save_output)

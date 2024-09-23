@@ -17,6 +17,7 @@ class StepExecutionStatus:
     COMPLETED: Final[str] = "COMPLETED"
     FAILED: Final[str] = "FAILED"
     SKIPPED: Final[str] = "SKIPPED"
+    NOT_EXECUTED: Final[str] = "NOT EXECUTED"
 
 
 @dataclass(frozen=True)

@@ -132,7 +132,9 @@ class ProjectSpec(BaseModel):
                 f"Failed to load project spec from {filepath}"
             ) from e
 
-    def __create_log_output(self, steps: List[AutomationStep], duration: float):
+    def __create_log_output(
+        self, steps: List[AutomationStep], duration: float, dry_run_mode: bool
+    ):
         """Write execution log to file.
 
         Args:
@@ -142,12 +144,23 @@ class ProjectSpec(BaseModel):
         timestamp = dt.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = f"aeternum-execution_{timestamp}"
         output_file = Path(file_name).with_suffix(".log")
+        mode = "DRY RUN" if dry_run_mode else "STANDARD"
         log_summary_rows = []
-        step_counts_by_status = {
-            StepExecutionStatus.COMPLETED: 0,
-            StepExecutionStatus.FAILED: 0,
-            StepExecutionStatus.SKIPPED: 0,
-        }
+        step_counts_by_status = {}
+        if not dry_run_mode:
+            step_counts_by_status.update(
+                {
+                    StepExecutionStatus.COMPLETED: 0,
+                    StepExecutionStatus.FAILED: 0,
+                    StepExecutionStatus.SKIPPED: 0,
+                }
+            )
+        else:
+            step_counts_by_status.update(
+                {
+                    StepExecutionStatus.NOT_EXECUTED: 0,
+                }
+            )
         for idx, (step, status) in enumerate(steps, start=1):
             command = (
                 step.command
@@ -173,11 +186,11 @@ class ProjectSpec(BaseModel):
             for status, count in step_counts_by_status.items():
                 file.write(f"{status}: {count}\n")
             file.write("\n")
-            file.write("Build Output:\n")
+            file.write(f"Build Output ({mode}):\n")
             file.write(step_summary_report)
             file.write("\n")
 
-    def build(self, quiet: bool, save_output: bool) -> None:
+    def build(self, dry_run: bool, quiet: bool, save_output: bool) -> None:
         """Run the build steps for the project.
 
         Args:
@@ -206,18 +219,26 @@ class ProjectSpec(BaseModel):
                 click.echo(
                     f"\n[{idx} / {len(self.build_stage.steps)}][{step.type.upper()}]: {step.name}"
                 )
-                result = step.run()
-                if result.exit_code != 0:
-                    icon = f"{Fore.RED}{Style.BRIGHT}{StepExecutionStatus.FAILED}{Style.RESET_ALL}"
+                if not dry_run:
+                    result = step.run()
+                    if result.exit_code != 0:
+                        icon = f"{Fore.RED}{Style.BRIGHT}{StepExecutionStatus.FAILED}{Style.RESET_ALL}"
+                        summary.append([idx, step.name, icon])
+                        executed_steps.append((step, StepExecutionStatus.FAILED))
+                        failed_step = result
+                        break
+                    if not quiet:
+                        click.echo(result.stdout)
+
+                    icon = f"{Fore.GREEN}{Style.BRIGHT}{StepExecutionStatus.COMPLETED}{Style.RESET_ALL}"
                     summary.append([idx, step.name, icon])
-                    executed_steps.append((step, StepExecutionStatus.FAILED))
-                    failed_step = result
-                    break
-                if not quiet:
-                    click.echo(result.stdout)
-                icon = f"{Fore.GREEN}{Style.BRIGHT}{StepExecutionStatus.COMPLETED}{Style.RESET_ALL}"
-                summary.append([idx, step.name, icon])
-                executed_steps.append((step, StepExecutionStatus.COMPLETED))
+                    executed_steps.append((step, StepExecutionStatus.COMPLETED))
+                else:
+                    icon = f"{Fore.LIGHTBLACK_EX}{StepExecutionStatus.NOT_EXECUTED}{Style.RESET_ALL}"
+                    summary.append([idx, step.name, icon])
+                    executed_steps.append((step, StepExecutionStatus.NOT_EXECUTED))
+
+                # Update progress bar
                 builds.update(1)
 
         execution_end_time = perf_counter()
@@ -240,7 +261,9 @@ class ProjectSpec(BaseModel):
         )
 
         if save_output:
-            log_file = self.__create_log_output(executed_steps, execution_duration)
+            log_file = self.__create_log_output(
+                executed_steps, execution_duration, dry_run
+            )
             click.echo(f"\nStep execution summary saved to {log_file}")
 
         if failed_step:
