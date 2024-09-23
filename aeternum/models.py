@@ -38,7 +38,7 @@ class AutomationStep(BaseModel):
 
     def run(self) -> StepExecutionResult:
         """Run the build commands with a specified shell."""
-        cmd_exec = get_command_string(self.command, *self.args)
+        cmd_exec = get_command_string(self.command, self.args)
         full_cmd = [self.shell, "-c", cmd_exec]
         click.echo(f"Executing command: '{cmd_exec}'")
         result = subprocess.run(full_cmd, capture_output=True, text=True)
@@ -231,11 +231,18 @@ class ProjectSpec(BaseModel):
                         click.echo(result.stdout)
 
                     icon = f"{Fore.GREEN}{Style.BRIGHT}{StepExecutionStatus.COMPLETED}{Style.RESET_ALL}"
-                    summary.append([idx, step.name, icon])
+                    summary.append([idx, step.name, result.command_executed, icon])
                     executed_steps.append((step, StepExecutionStatus.COMPLETED))
                 else:
                     icon = f"{Fore.LIGHTBLACK_EX}{StepExecutionStatus.NOT_EXECUTED}{Style.RESET_ALL}"
-                    summary.append([idx, step.name, icon])
+                    summary.append(
+                        [
+                            idx,
+                            step.name,
+                            get_command_string(step.command, step.args),
+                            icon,
+                        ]
+                    )
                     executed_steps.append((step, StepExecutionStatus.NOT_EXECUTED))
 
                 # Update progress bar
@@ -248,7 +255,7 @@ class ProjectSpec(BaseModel):
         click.echo(f"Ran {len(summary)} automation steps in {execution_duration:.3f}s")
         headers = map(
             lambda h: f"{Fore.WHITE}{Style.BRIGHT}{h}{Style.RESET_ALL}",
-            ["#", "STEP", "STATUS"],
+            ["#", "STEP", "COMMAND", "STATUS"],
         )
         click.echo(
             tabulate(
