@@ -1,13 +1,12 @@
 import logging
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import click
 
 from .constants import ConsoleIcons, ProjectFiles
-from .output import get_command_string, run_validation_command
+from .output import run_validation_command
 
 logger = logging.getLogger(__name__)
 

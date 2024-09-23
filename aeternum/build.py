@@ -15,26 +15,26 @@ logger = logging.getLogger(__name__)
     "--file",
     "-f",
     type=Path,
-    help="Path to spec file",
+    help="Path to YAML config file",
     default=ProjectFiles.SPEC_FILE,
 )
 @click.option(
     "--dry-run",
     is_flag=True,
-    help="Get summary of build steps without running them",
+    help="Get summary of build steps without running them.",
     default=False,
 )
 @click.option(
     "--quiet",
     "-q",
     is_flag=True,
-    help="If passed, output from build steps will not be printed out",
+    help="If passed, output from build steps will not be printed out.",
     default=False,
 )
 @click.option(
     "--save-output",
     is_flag=True,
-    help="Save execution output to file",
+    help="Save execution output to file.",
     default=False,
 )
 def build_project(file: str, dry_run: bool, quiet: bool, save_output: bool) -> None:
