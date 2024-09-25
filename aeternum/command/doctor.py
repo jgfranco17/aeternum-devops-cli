@@ -5,8 +5,8 @@ from typing import List, Optional
 
 import click
 
-from .constants import ConsoleIcons, ProjectFiles
-from .output import run_validation_command
+from aeternum.core.constants import ConsoleIcons, ProjectFiles
+from aeternum.core.output import run_validation_command
 
 logger = logging.getLogger(__name__)
 

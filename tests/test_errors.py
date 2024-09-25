@@ -1,4 +1,4 @@
-from aeternum.errors import (
+from aeternum.core.errors import (
     AeternumBaseError,
     AeternumInputError,
     AeternumRuntimeError,

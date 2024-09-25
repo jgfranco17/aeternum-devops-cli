@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 from pytest import MonkeyPatch
 
-from aeternum.output import run_validation_command
+from aeternum.core.output import run_validation_command
 
 
 @patch("subprocess.run")

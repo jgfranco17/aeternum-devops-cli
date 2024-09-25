@@ -3,8 +3,13 @@ import os
 from pydantic import ValidationError
 from pytest import raises
 
-from aeternum.errors import AeternumInputError
-from aeternum.models import AutomationStep, AutomationStrategy, BuildStage, ProjectSpec
+from aeternum.core.errors import AeternumInputError
+from aeternum.core.models import (
+    AutomationStep,
+    AutomationStrategy,
+    BuildStage,
+    ProjectSpec,
+)
 from tests.test_helpers.file_utils import load_resources_dir
 
 

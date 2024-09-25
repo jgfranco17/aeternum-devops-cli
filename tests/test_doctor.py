@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, Mock, call, patch
 from pytest import MonkeyPatch, raises
 from pytest_mock import MockerFixture
 
-from aeternum.doctor import (
+from aeternum.command.doctor import (
     AeternumRequirement,
     ExpectedBinary,
     ExpectedFile,

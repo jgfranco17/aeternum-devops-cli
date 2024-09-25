@@ -3,9 +3,9 @@ from pathlib import Path
 
 import click
 
-from aeternum.constants import ProjectFiles
-from aeternum.errors import AeternumInputError
-from aeternum.models import ProjectSpec
+from aeternum.core.constants import ProjectFiles
+from aeternum.core.errors import AeternumInputError
+from aeternum.core.models import ProjectSpec
 
 logger = logging.getLogger(__name__)
 

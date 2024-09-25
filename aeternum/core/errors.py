@@ -1,5 +1,4 @@
 """Aeternum exceptions."""
-
 from typing import Final, Optional
 
 

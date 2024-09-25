@@ -3,11 +3,12 @@ import logging
 import click
 import colorama
 
+from aeternum.command.build import build_project
+from aeternum.command.doctor import doctor
+from aeternum.core.handler import AeternumCliHandler
+from aeternum.core.output import ColorHandler
+
 from . import __version__
-from .build import build_project
-from .doctor import doctor
-from .handler import AeternumCliHandler
-from .output import ColorHandler
 
 colorama.init(autoreset=True)
 

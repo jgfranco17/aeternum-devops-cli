@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from aeternum.output import ColorHandler
+from aeternum.core.output import ColorHandler
 from tests.test_helpers.runner import TestRunner
 
 
@@ -31,11 +31,11 @@ def logger() -> MockLogger:
 
 @pytest.fixture
 def mock_datetime() -> Generator[MagicMock, None, None]:
-    with patch("aeternum.models.dt.datetime") as mock_datetime:
+    with patch("aeternum.core.models.dt.datetime") as mock_datetime:
         yield mock_datetime
 
 
 @pytest.fixture
 def mock_perf_counter() -> Generator[MagicMock, None, None]:
-    with patch("aeternum.models.perf_counter") as mock_datetime:
+    with patch("aeternum.core.models.perf_counter") as mock_datetime:
         yield mock_datetime

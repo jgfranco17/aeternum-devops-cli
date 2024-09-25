@@ -13,9 +13,9 @@ from colorama import Fore, Style
 from pydantic import BaseModel, Field, ValidationError
 from tabulate import tabulate
 
-from .constants import StepExecutionStatus, StepType
-from .errors import AeternumInputError, AeternumRuntimeError
-from .output import get_command_string
+from aeternum.core.constants import StepExecutionStatus, StepType
+from aeternum.core.errors import AeternumInputError, AeternumRuntimeError
+from aeternum.core.output import get_command_string
 
 logger = logging.getLogger(__name__)
 

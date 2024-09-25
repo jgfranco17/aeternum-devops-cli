@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 import click
 
-from .errors import AeternumBaseError, ExitCode
+from aeternum.core.errors import AeternumBaseError, ExitCode
 
 logger = logging.getLogger(__name__)
 
@@ -21,15 +21,22 @@ class AeternumCliHandler(click.Group):
         """Invoke the CLI and catch, log and exit for any raised errors."""
         try:
             return super().invoke(ctx)
-
-        except AeternumBaseError as err:
-            logger.error(err)
-            click.secho(f"{err.help_text}", fg="yellow")
-            sys.exit(err.exit_code)
-
         except click.UsageError as err:
             err.show()
             sys.exit(ExitCode.RUNTIME_ERROR)
+
+        except AeternumBaseError as err:
+            if ctx.obj.get("debug_logging", True):
+                logger.exception(err)
+            else:
+                error_str = err.message
+                cause = err.__cause__
+                while cause is not None:
+                    error_str = f"{error_str}\n\t{cause}"
+                    cause = cause.__cause__
+                logger.error(error_str)
+            click.secho(f"{err.help_text}", fg="yellow")
+            sys.exit(err.exit_code)
 
     def format_help(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
         """Customize help info."""
