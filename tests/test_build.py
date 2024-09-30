@@ -89,6 +89,22 @@ def test_build_invalid_spec_file(
 
 
 @patch("subprocess.run")
+def test_build_invalid_spec_file(
+    mock_subproc_run: MagicMock,
+    tmp_path: Path,
+    mocker: MockerFixture,
+    runner: TestRunner,
+    monkeypatch: MonkeyPatch,
+) -> None:
+    """Tests aeternum build in the success case."""
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.run_cli(["build", "-f", "non-existent.yaml"])
+    assert result.exit_code == 1, f"Expected exit code 1, got {result.exit_code}"
+    assert "Path 'non-existent.yaml' does not exist" in result.stderr
+
+
+@patch("subprocess.run")
 def test_build_with_log_output_all_steps_completed(
     mock_subproc_run: MagicMock,
     tmp_path: Path,

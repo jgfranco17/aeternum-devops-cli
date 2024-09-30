@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @click.option(
     "--file",
     "-f",
-    type=Path,
+    type=click.Path(exists=True),
     help="Path to YAML config file",
     default=ProjectFiles.SPEC_FILE,
 )
