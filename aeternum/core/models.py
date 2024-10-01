@@ -159,7 +159,14 @@ class ProjectSpec(BaseModel):
     def write(self, filepath: Path) -> None:
         full_filepath = filepath.with_suffix(".yaml").resolve()
         with open(full_filepath, "w") as file:
-            yaml.dump(self.model_dump(), file, Dumper=OrderedDumper, sort_keys=False)
+            yaml.dump(
+                self.model_dump(),
+                file,
+                Dumper=OrderedDumper,
+                sort_keys=False,
+                indent=2,
+                default_flow_style=False,
+            )
         click.echo(f"Project specification exported to file: '{full_filepath}'")
 
     @classmethod
