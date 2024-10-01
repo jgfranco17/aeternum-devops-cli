@@ -29,5 +29,7 @@ coverage:
     poetry run coverage run --source=aeternum --omit="*/__*.py,*/test_*.py" -m pytest
     poetry run coverage report -m
 
-get-project-coverage:
+# Verify that the test coverage is within acceptable levels
+coverage-sheriff MIN="80":
     poetry run coverage xml -q --omit="*/__*.py,*/test_*.py" -o coverage.xml
+    poetry run python3 ./tools/coverage_sheriff.py --minimum {{ MIN }}
