@@ -3,7 +3,7 @@ import os
 from pydantic import ValidationError
 from pytest import raises
 
-from aeternum.core.errors import AeternumInputError
+from aeternum.core.errors import AeternumInputError, AeternumValidationError
 from aeternum.core.models import (
     AutomationStep,
     AutomationStrategy,
@@ -23,7 +23,7 @@ def test_load_from_yaml_success():
     assert project.strict_build is True
     for step in project.build_stage.steps:
         assert isinstance(step, AutomationStep)
-        assert step.type in ["build", "test", "deploy"]
+        assert step.category in ["build", "test", "deploy"]
         assert step.shell is not None
 
 
@@ -50,11 +50,15 @@ def test_load_from_yaml_invalid_file():
 def test_build_stage_components_success():
     strategy = AutomationStrategy(strict=True)
     exec_steps = [
-        AutomationStep(name="Run make", type="build", command="make", args=["build"]),
-        AutomationStep(name="Unit test", type="test", command="pytest", args=["-v"]),
+        AutomationStep(
+            name="Run make", category="build", command="make", args=["build"]
+        ),
+        AutomationStep(
+            name="Unit test", category="test", command="pytest", args=["-v"]
+        ),
         AutomationStep(
             name="Push",
-            type="deploy",
+            category="deploy",
             command="kubectl",
             args=["apply", "-f", "manifests/resources.yaml"],
         ),
@@ -69,7 +73,7 @@ def test_build_stage_components_success():
 
 
 def test_automation_step_invalid():
-    with raises(ValidationError):
+    with raises(AeternumValidationError):
         _ = AutomationStep(
-            name="Something", type="random", command="python3", args=["app.py"]
+            name="Something", category="random", command="python3", args=["app.py"]
         )

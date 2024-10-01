@@ -3,6 +3,7 @@ import sys
 from typing import Any, Dict
 
 import click
+from pydantic import ValidationError
 
 from aeternum.core.errors import AeternumBaseError, ExitCode
 

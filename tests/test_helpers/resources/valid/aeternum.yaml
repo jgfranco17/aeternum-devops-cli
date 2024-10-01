@@ -10,10 +10,10 @@ build-stage:
       command: "pip"
       args: ["list"]
       shell: "/bin/bash"
-      type: "build"
+      category: "build"
 
     - name: "Run tests"
-      type: "test"
+      category: "test"
       command: "pytest"
       args: ["-v"]
       shell: "/bin/zsh"

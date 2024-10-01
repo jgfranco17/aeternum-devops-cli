@@ -1,4 +1,3 @@
-"""Aeternum exceptions."""
 from typing import Final, Optional
 
 
@@ -53,3 +52,16 @@ class AeternumInputError(AeternumBaseError):
         """Init an Aeternum Input Error."""
         self.message = message
         super().__init__(self.message, ExitCode.INPUT_ERROR, help_text)
+
+
+class AeternumValidationError(AeternumBaseError):
+    """Aeternum User Validation Error class."""
+
+    def __init__(
+        self,
+        message: str,
+        help_text: Optional[str] = None,
+    ) -> None:
+        """Init an Aeternum Validation Error."""
+        self.message = message
+        super().__init__(self.message, ExitCode.VALIDATION_ERROR, help_text)

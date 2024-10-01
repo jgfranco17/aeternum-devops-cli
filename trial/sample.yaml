@@ -10,16 +10,16 @@ build-stage:
       command: "pip"
       args: ["list"]
       shell: "/bin/bash"
-      type: "test"
+      category: "test"
 
     - name: "Show directory contents"
-      type: "build"
+      category: "build"
       command: "ls"
       args: ["-la"]
       shell: "/bin/zsh"
 
     - name: "Show file contents"
-      type: "build"
+      category: "build"
       command: "cat"
       args: ["trial/sample.yaml"]
       shell: "/bin/zsh"

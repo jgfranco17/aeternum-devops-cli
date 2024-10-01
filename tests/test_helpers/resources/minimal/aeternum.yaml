@@ -8,9 +8,9 @@ build-stage:
     - name: "Install dependencies"
       command: "pip"
       args: ["show"]
-      type: "build"
+      category: "build"
 
     - name: "Run tests"
-      type: "test"
+      category: "test"
       command: "pytest"
       args: ["-v"]

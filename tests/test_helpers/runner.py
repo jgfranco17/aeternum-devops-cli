@@ -32,26 +32,26 @@ def assert_cli_output(
     expected_exception: Optional[SystemExit] = None,
 ) -> None:
     """Verify successful result, output and instantiated jama client."""
-    # Will be captured by pytest most of the time.
-    # By default it will only be shown if the test fails
     print("Actual stdout:")
     print(result.stdout)
+    print("Actual stderr:")
+    print(result.stderr)
+
+    assert (
+        result.exit_code == expected_exit_code
+    ), f"Expected exit code failed. Expected: {expected_exit_code}, Actual: {result.exit_code}"
+
+    # Validations
     if expected_stdout:
         for output in expected_stdout:
             print(f"Expected stdout: {output}")
             assert output in result.stdout, "Expected stdout not found in actual stdout"
-    print("Actual stderr:")
-    print(result.stderr)
     if expected_stderr != "":
         print("Expected stderr:")
         print(expected_stderr)
         assert (
             expected_stderr in result.stderr
         ), "Expected error not found in actual stderr"
-
-    assert (
-        result.exit_code == expected_exit_code
-    ), f"Expected exit code failed. Expected: {expected_exit_code}, Actual: {result.exit_code}"
 
     if expected_exception is None:
         assert (

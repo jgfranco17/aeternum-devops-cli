@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum
 from typing import Final
 
 
@@ -28,7 +27,8 @@ class ConsoleIcons:
     CROSS: Final[str] = "\u2715"
 
 
-class StepType(str, Enum):
+@dataclass(frozen=True)
+class StepType:
     """Possible values for build steps."""
 
     BUILD: str = "build"

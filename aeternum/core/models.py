@@ -10,12 +10,17 @@ from typing import List, Optional
 import click
 import yaml
 from colorama import Fore, Style
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, field_validator
 from tabulate import tabulate
 
 from aeternum.core.constants import StepExecutionStatus, StepType
-from aeternum.core.errors import AeternumInputError, AeternumRuntimeError
+from aeternum.core.errors import (
+    AeternumInputError,
+    AeternumRuntimeError,
+    AeternumValidationError,
+)
 from aeternum.core.output import get_command_string
+from aeternum.core.writer import OrderedDumper
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +36,19 @@ class StepExecutionResult:
 
 class AutomationStep(BaseModel):
     name: str
-    type: StepType
+    category: str
     shell: Optional[str] = Field("/bin/bash")
     command: str
     args: Optional[List[str]] = None
+
+    @field_validator("category")
+    def validate_category(cls, v: str) -> str:
+        valid_step_types = [StepType.BUILD, StepType.TEST, StepType.DEPLOY]
+        if v not in valid_step_types:
+            raise AeternumValidationError(
+                f"Invalid category '{v}', must be one of: {valid_step_types}."
+            )
+        return v
 
     def run(self) -> StepExecutionResult:
         """Run the build commands with a specified shell."""
@@ -80,7 +94,7 @@ class BuildStage(BaseModel):
         deploy_count = 0
         invalid_count = 0
         for step in self.steps:
-            match step.type:
+            match step.category:
                 case StepType.BUILD:
                     build_count += 1
                 case StepType.TEST:
@@ -102,6 +116,10 @@ class ProjectSpec(BaseModel):
     version: str
     build_stage: BuildStage = Field(..., alias="build-stage")
 
+    class Config:
+        populate_by_name: bool = True
+        use_enum_values: bool = True
+
     @property
     def strict_build(self) -> bool:
         """Get project build strategy strictness.
@@ -110,6 +128,39 @@ class ProjectSpec(BaseModel):
             bool: True if strict build strategy is enabled
         """
         return self.build_stage.strategy.strict
+
+    @classmethod
+    def load_from_inputs(
+        cls, name: str, repo_url: str, version: str, strict: bool
+    ) -> "ProjectSpec":
+        """Build a ProjectSpec from inputs."""
+        default_steps = [
+            AutomationStep(
+                name=f"Step {idx}",
+                category=category,
+                command="some-command",
+                args=[],
+            )
+            for idx, category in enumerate(
+                [StepType.BUILD, StepType.TEST, StepType.DEPLOY], start=1
+            )
+        ]
+        build_stage_config = BuildStage(
+            strategy=AutomationStrategy(strict=strict), steps=default_steps
+        )
+
+        return ProjectSpec(
+            name=name,
+            repo_url=repo_url,
+            version=version,
+            build_stage=build_stage_config,
+        )
+
+    def write(self, filepath: Path) -> None:
+        full_filepath = filepath.with_suffix(".yaml").resolve()
+        with open(full_filepath, "w") as file:
+            yaml.dump(self.model_dump(), file, Dumper=OrderedDumper, sort_keys=False)
+        click.echo(f"Project specification exported to file: '{full_filepath}'")
 
     @classmethod
     def load_from_yaml(cls, filepath: Path) -> "ProjectSpec":
@@ -217,7 +268,7 @@ class ProjectSpec(BaseModel):
         with build_progress as builds:
             for idx, step in enumerate(builds, start=1):
                 click.echo(
-                    f"\n[{idx} / {len(self.build_stage.steps)}][{step.type.upper()}]: {step.name}"
+                    f"\n[{idx} / {len(self.build_stage.steps)}][{step.category.upper()}]: {step.name}"
                 )
                 if not dry_run:
                     result = step.run()

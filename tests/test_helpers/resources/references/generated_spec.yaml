@@ -1,0 +1,22 @@
+name: Test-Project
+repo_url: https://github.com/some-user/my-test-project
+version: 0.1.0
+build_stage:
+  strategy:
+    strict: true
+  steps:
+    - name: Step 1
+      category: build
+      shell: /bin/bash
+      command: some-command
+      args: []
+    - name: Step 2
+      category: test
+      shell: /bin/bash
+      command: some-command
+      args: []
+    - name: Step 3
+      category: deploy
+      shell: /bin/bash
+      command: some-command
+      args: []

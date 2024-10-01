@@ -10,10 +10,10 @@ build-stage:
       command: "pip"
       args: ["list"]
       shell: "/bin/bash"
-      type: "build"
+      category: "build"
 
     - name: "Run deployment"
-      type: "deploy"
+      category: "deploy"
       command: "kubectl"
       args: ["restart", "rollout"]
       shell: "/bin/zsh"
