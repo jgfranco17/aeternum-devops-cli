@@ -1,5 +1,5 @@
 import logging
-from pathlib import Path
+from typing import Optional, Tuple
 
 import click
 
@@ -37,9 +37,41 @@ logger = logging.getLogger(__name__)
     help="Save execution output to file.",
     default=False,
 )
-def run_scripts(file: str, dry_run: bool, quiet: bool, save_output: bool) -> None:
+@click.option(
+    "--include",
+    multiple=True,
+    required=False,
+    help="Run only specific step types (e.g. 'build', 'test', or 'deploy').",
+)
+@click.option(
+    "--exclude",
+    multiple=True,
+    required=False,
+    help="Run only specific step types (e.g. 'build', 'test', or 'deploy').",
+)
+def run_scripts(
+    file: str,
+    dry_run: bool,
+    quiet: bool,
+    save_output: bool,
+    include: Optional[Tuple[str, ...]],
+    exclude: Optional[Tuple[str, ...]],
+) -> None:
     """Initialize and build a project from specification file."""
     project = ProjectSpec.load_from_yaml(file)
     logger.info(f"Loaded project: {project.name} {project.version}")
     project.build_stage.validate(project.strict_build)
-    project.build(dry_run, quiet, save_output)
+    common_step_types = list(set(include) & set(exclude))
+    if len(common_step_types) > 0:
+        raise AeternumInputError(
+            message=f"Found {len(common_step_types)} overlaps in include "
+            + "and exclude options.",
+            help_text=f"Conflicting filters: {common_step_types}",
+        )
+    project.build(
+        dry_run_mode=dry_run,
+        quiet_output=quiet,
+        export_logs=save_output,
+        include_filters=include,
+        exclude_filters=exclude,
+    )

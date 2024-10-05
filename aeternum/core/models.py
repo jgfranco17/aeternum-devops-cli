@@ -5,7 +5,7 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from time import perf_counter
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import click
 import yaml
@@ -23,6 +23,9 @@ from aeternum.core.output import get_command_string
 from aeternum.core.writer import OrderedDumper
 
 logger = logging.getLogger(__name__)
+
+
+ALLOWED_STEP_TYPES: List[str] = [StepType.BUILD, StepType.TEST, StepType.DEPLOY]
 
 
 @dataclass(frozen=True)
@@ -43,7 +46,7 @@ class AutomationStep(BaseModel):
 
     @field_validator("category")
     def validate_category(cls, v: str) -> str:
-        valid_step_types = [StepType.BUILD, StepType.TEST, StepType.DEPLOY]
+        valid_step_types = ALLOWED_STEP_TYPES
         if v not in valid_step_types:
             raise AeternumValidationError(
                 f"Invalid category '{v}', must be one of: {valid_step_types}."
@@ -63,6 +66,13 @@ class AutomationStep(BaseModel):
             stderr=result.stderr,
             exit_code=result.returncode,
         )
+
+    def should_run(self, includes: Tuple[str, ...], excludes: Tuple[str, ...]) -> bool:
+        if includes and self.category not in includes:
+            return False
+        if excludes and self.category in excludes:
+            return False
+        return True
 
 
 class AutomationStrategy(BaseModel):
@@ -251,14 +261,25 @@ class ProjectSpec(BaseModel):
             file.write(step_summary_report)
             file.write("\n")
 
-    def build(self, dry_run: bool, quiet: bool, save_output: bool) -> None:
-        """Run the build steps for the project.
+    def build(
+        self,
+        dry_run_mode: bool,
+        quiet_output: bool,
+        export_logs: bool,
+        include_filters: Tuple[str, ...],
+        exclude_filters: Tuple[str, ...],
+    ) -> None:
+        """Run the Aeternum steps for the project.
 
         Args:
-            quiet (bool): If True, output from build steps will be suppressed.
+            dry_run_mode (bool): If true, summarize the steps without executing
+            quiet_output (bool): If true, output will not be printed to stdout
+            export_logs (bool): If true, export the outputs as a log file
+            include_filters (Tuple[str, ...]): Steps to include
+            exclude_filters (Tuple[str, ...]): Steps to exclude
 
         Raises:
-            AeternumRuntimeError: If any build step fails
+            AeternumRuntimeError: If any build steps fail
         """
         build_label = f"Building {self.name} v{self.version}"
         fill_char = click.style("=", fg="green")
@@ -280,31 +301,36 @@ class ProjectSpec(BaseModel):
                 click.echo(
                     f"\n[{idx} / {len(self.build_stage.steps)}][{step.category.upper()}]: {step.name}"
                 )
-                if not dry_run:
-                    result = step.run()
-                    if result.exit_code != 0:
-                        icon = f"{Fore.RED}{Style.BRIGHT}{StepExecutionStatus.FAILED}{Style.RESET_ALL}"
-                        summary.append([idx, step.name, icon])
-                        executed_steps.append((step, StepExecutionStatus.FAILED))
-                        failed_step = result
-                        break
-                    if not quiet:
-                        click.echo(result.stdout)
+                if step.should_run(include_filters, exclude_filters):
+                    if not dry_run_mode:
+                        result = step.run()
+                        if result.exit_code != 0:
+                            icon = f"{Fore.RED}{Style.BRIGHT}{StepExecutionStatus.FAILED}{Style.RESET_ALL}"
+                            summary.append([idx, step.name, icon])
+                            executed_steps.append((step, StepExecutionStatus.FAILED))
+                            failed_step = result
+                            break
+                        if not quiet_output:
+                            click.echo(result.stdout)
 
-                    icon = f"{Fore.GREEN}{Style.BRIGHT}{StepExecutionStatus.COMPLETED}{Style.RESET_ALL}"
-                    summary.append([idx, step.name, result.command_executed, icon])
-                    executed_steps.append((step, StepExecutionStatus.COMPLETED))
+                        icon = f"{Fore.GREEN}{Style.BRIGHT}{StepExecutionStatus.COMPLETED}{Style.RESET_ALL}"
+                        summary.append([idx, step.name, result.command_executed, icon])
+                        executed_steps.append((step, StepExecutionStatus.COMPLETED))
+                    else:
+                        icon = f"{Fore.LIGHTBLACK_EX}{StepExecutionStatus.NOT_EXECUTED}{Style.RESET_ALL}"
+                        summary.append(
+                            [
+                                idx,
+                                step.name,
+                                get_command_string(step.command, step.args),
+                                icon,
+                            ]
+                        )
+                        executed_steps.append((step, StepExecutionStatus.NOT_EXECUTED))
+
                 else:
-                    icon = f"{Fore.LIGHTBLACK_EX}{StepExecutionStatus.NOT_EXECUTED}{Style.RESET_ALL}"
-                    summary.append(
-                        [
-                            idx,
-                            step.name,
-                            get_command_string(step.command, step.args),
-                            icon,
-                        ]
-                    )
-                    executed_steps.append((step, StepExecutionStatus.NOT_EXECUTED))
+                    logger.debug(f"Step #{idx} filtered out, skipping execution")
+                    executed_steps.append((step, StepExecutionStatus.EXCLUDED))
 
                 # Update progress bar
                 builds.update(1)
@@ -328,9 +354,9 @@ class ProjectSpec(BaseModel):
             )
         )
 
-        if save_output:
+        if export_logs:
             log_file = self.__create_log_output(
-                executed_steps, execution_duration, dry_run
+                executed_steps, execution_duration, dry_run_mode
             )
             click.echo(f"\nStep execution summary saved to {log_file}")
 

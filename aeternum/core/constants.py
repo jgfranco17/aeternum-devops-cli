@@ -14,6 +14,7 @@ class StepExecutionStatus:
     """Constants for execution statuses."""
 
     COMPLETED: Final[str] = "COMPLETED"
+    EXCLUDED: Final[str] = "EXCLUDED"
     FAILED: Final[str] = "FAILED"
     SKIPPED: Final[str] = "SKIPPED"
     NOT_EXECUTED: Final[str] = "NOT EXECUTED"

@@ -14,7 +14,7 @@ from tests.shared.runner import TestRunner, assert_cli_output
 
 
 @patch("subprocess.run")
-def test_run_success(
+def test_run_all_steps_success(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     mocker: MockerFixture,
@@ -37,6 +37,60 @@ def test_run_success(
     result = runner.run_cli(["run"])
     assert_cli_output(
         result, ["Build completed for test-project v0.1.0", "Ran 2 automation steps"]
+    )
+
+
+@patch("subprocess.run")
+def test_run_include_steps_success(
+    mock_subproc_run: MagicMock,
+    tmp_path: Path,
+    mocker: MockerFixture,
+    runner: TestRunner,
+    monkeypatch: MonkeyPatch,
+) -> None:
+    """Tests aeternum build in the success case."""
+    monkeypatch.chdir(tmp_path)
+    valid_spec_file = load_resources_dir("valid", "aeternum.yaml")
+    shutil.copy(valid_spec_file, Path(tmp_path, "aeternum.yaml"))
+
+    successful_subprocess_exec = Mock()
+    successful_subprocess_exec.configure_mock(
+        **{"returncode": 0, "stdout.decode.return_value": "Ran step successfully"}
+    )
+    mock_subproc_run.side_effect = [
+        successful_subprocess_exec,
+        successful_subprocess_exec,
+    ]
+    result = runner.run_cli(["run", "--include", "build"])
+    assert_cli_output(
+        result, ["Build completed for test-project v0.1.0", "Ran 1 automation steps"]
+    )
+
+
+@patch("subprocess.run")
+def test_run_exclude_steps_success(
+    mock_subproc_run: MagicMock,
+    tmp_path: Path,
+    mocker: MockerFixture,
+    runner: TestRunner,
+    monkeypatch: MonkeyPatch,
+) -> None:
+    """Tests aeternum build in the success case."""
+    monkeypatch.chdir(tmp_path)
+    valid_spec_file = load_resources_dir("valid", "aeternum.yaml")
+    shutil.copy(valid_spec_file, Path(tmp_path, "aeternum.yaml"))
+
+    successful_subprocess_exec = Mock()
+    successful_subprocess_exec.configure_mock(
+        **{"returncode": 0, "stdout.decode.return_value": "Ran step successfully"}
+    )
+    mock_subproc_run.side_effect = [
+        successful_subprocess_exec,
+        successful_subprocess_exec,
+    ]
+    result = runner.run_cli(["run", "--exclude", "test"])
+    assert_cli_output(
+        result, ["Build completed for test-project v0.1.0", "Ran 1 automation steps"]
     )
 
 
@@ -68,6 +122,32 @@ def test_run_step_failure(
     result = runner.run_cli(["run"])
     assert result.exit_code == 1, f"Expected exit code 1, got {result.exit_code}"
     assert "FAILED" in result.output, "Summary table did not appear in output"
+
+
+@patch("subprocess.run")
+def test_run_filtered_steps_filter_conflict(
+    mock_subproc_run: MagicMock,
+    tmp_path: Path,
+    mocker: MockerFixture,
+    runner: TestRunner,
+    monkeypatch: MonkeyPatch,
+) -> None:
+    """Tests aeternum build in the success case."""
+    monkeypatch.chdir(tmp_path)
+    valid_spec_file = load_resources_dir("valid", "aeternum.yaml")
+    shutil.copy(valid_spec_file, Path(tmp_path, "aeternum.yaml"))
+
+    successful_subprocess_exec = Mock()
+    successful_subprocess_exec.configure_mock(
+        **{"returncode": 0, "stdout.decode.return_value": "Ran step successfully"}
+    )
+    mock_subproc_run.side_effect = [
+        successful_subprocess_exec,
+        successful_subprocess_exec,
+    ]
+    result = runner.run_cli(["run", "--include", "build", "--exclude", "build"])
+    assert result.exit_code == 2, f"Expected exit code 2, got {result.exit_code}"
+    assert "Found 1 overlaps in include and exclude options" in result.stderr
 
 
 @patch("subprocess.run")
