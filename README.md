@@ -13,7 +13,7 @@ In future iterations, a companion REST API will be available and integrated into
 
 ## Project Code Coverage
 
-![Coverage](https://img.shields.io/badge/coverage-98.26-green?style=for-the-badge)
+![Coverage](https://img.shields.io/badge/coverage-96.28-green?style=for-the-badge)
 
 See latest coverage report in GHA summaries: [coverage workflow](https://github.com/jgfranco17/aeternum-devops-cli/actions/workflows/testing.yaml)
 

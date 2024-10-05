@@ -71,21 +71,21 @@ def test_build_step_failure(
 
 
 @patch("subprocess.run")
-def test_build_invalid_spec_file(
+def test_build_no_test_steps_in_strict_mode(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     mocker: MockerFixture,
     runner: TestRunner,
     monkeypatch: MonkeyPatch,
 ) -> None:
-    """Tests aeternum build in the success case."""
+    """Tests aeternum build with no tests in strict."""
     monkeypatch.chdir(tmp_path)
-    valid_spec_file = load_resources_dir("invalid_files", "aeternum-no-tests.yaml")
-    shutil.copy(valid_spec_file, Path(tmp_path, "aeternum.yaml"))
+    invalid_spec_file = load_resources_dir("invalid_files", "aeternum-no-tests.yaml")
+    shutil.copy(invalid_spec_file, Path(tmp_path, "aeternum.yaml"))
 
     result = runner.run_cli(["build"])
     assert result.exit_code == 2, f"Expected exit code 2, got {result.exit_code}"
-    assert "No test steps found in test-project build stage" in result.stderr
+    assert "No test steps found in build stage" in result.stderr
 
 
 @patch("subprocess.run")
@@ -96,7 +96,7 @@ def test_build_invalid_spec_file(
     runner: TestRunner,
     monkeypatch: MonkeyPatch,
 ) -> None:
-    """Tests aeternum build in the success case."""
+    """Tests aeternum build with non-existent file."""
     monkeypatch.chdir(tmp_path)
 
     result = runner.run_cli(["build", "-f", "non-existent.yaml"])

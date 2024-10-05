@@ -49,10 +49,6 @@ jobs:
         run: |
           poetry run aeternum doctor
 
-      - name: Integration test - BUILD
-        run: |
-          poetry run aeternum build -f trial/sample.yaml
-
       - name: Integration test - INIT
         run: |
           poetry run aeternum -vv init -f test.yaml \

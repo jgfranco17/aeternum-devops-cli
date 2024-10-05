@@ -40,12 +40,6 @@ logger = logging.getLogger(__name__)
 def build_project(file: str, dry_run: bool, quiet: bool, save_output: bool) -> None:
     """Initialize and build a project from specification file."""
     project = ProjectSpec.load_from_yaml(file)
-    logger.info(f"Loaded project: {project.name}")
-    if project.strict_build:
-        validation_result = project.build_stage.validate()
-        if validation_result.test_step_count == 0:
-            raise AeternumInputError(
-                f"No test steps found in {project.name} build stage"
-            )
-
+    logger.info(f"Loaded project: {project.name} {project.version}")
+    project.build_stage.validate(project.strict_build)
     project.build(dry_run, quiet, save_output)

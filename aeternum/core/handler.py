@@ -29,13 +29,7 @@ class AeternumCliHandler(click.Group):
         except AeternumBaseError as err:
             if ctx.obj.get("debug_logging", True):
                 logger.exception(err)
-            else:
-                error_str = err.message
-                cause = err.__cause__
-                while cause is not None:
-                    error_str = f"{error_str}\n\t{cause}"
-                    cause = cause.__cause__
-                logger.error(error_str)
+            logger.error(err.message)
             click.secho(f"{err.help_text}", fg="yellow")
             sys.exit(err.exit_code)
 

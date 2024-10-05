@@ -39,7 +39,14 @@ class ExpectedBinary(AeternumRequirement):
 
 
 @click.command("doctor")
-def doctor() -> None:
+@click.option(
+    "--file",
+    "-f",
+    type=click.Path(path_type=str),
+    help="Path to YAML config file",
+    default=ProjectFiles.SPEC_FILE,
+)
+def doctor(file: Path) -> None:
     """Validate current workspace for Aeternum CI compatibility."""
     required_bins = [
         ExpectedBinary(
@@ -53,9 +60,9 @@ def doctor() -> None:
     required_files = [
         ExpectedFile(
             name="Aeternum YAML config file",
-            path_in_repo=ProjectFiles.SPEC_FILE,
+            path_in_repo=file,
             impact_if_missing="Cannot build project without configuration file",
-            help_text=f"Create an {ProjectFiles.SPEC_FILE} file in the root of your project directory",
+            help_text=f"Create an {ProjectFiles.SPEC_FILE} file in your project.",
         ),
     ]
 

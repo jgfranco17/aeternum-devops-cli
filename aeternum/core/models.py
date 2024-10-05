@@ -69,7 +69,7 @@ class AutomationStrategy(BaseModel):
     strict: bool = Field(True)
 
 
-class ValidationResult(BaseModel):
+class ValidationSummary(BaseModel):
     build_step_count: int
     test_step_count: int
     deploy_step_count: int
@@ -83,11 +83,11 @@ class BuildStage(BaseModel):
     strategy: AutomationStrategy
     steps: List[AutomationStep]
 
-    def validate(self) -> ValidationResult:
+    def validate(self, strict: Optional[bool] = False) -> ValidationSummary:
         """Validate the build stage steps list.
 
         Returns:
-            ValidationResult: Object with counts of build, test, and deploy steps.
+            ValidationSummary: Object with counts of build, test, and deploy steps.
         """
         build_count = 0
         test_count = 0
@@ -102,7 +102,10 @@ class BuildStage(BaseModel):
                 case StepType.DEPLOY:
                     deploy_count += 1
 
-        return ValidationResult(
+        if strict and test_count == 0:
+            raise AeternumInputError("No test steps found in build stage")
+
+        return ValidationSummary(
             build_step_count=build_count,
             test_step_count=test_count,
             deploy_step_count=deploy_count,
