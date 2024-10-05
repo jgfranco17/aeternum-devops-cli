@@ -31,6 +31,7 @@ black = "^24.4.2"
 coverage = "^7.6.0"
 poetry = "^1.8.3"
 pytest-mock = "^3.14.0"
+behave = "^1.2.6"
 
 [tool.poetry.scripts]
 aeternum = "aeternum.main:cli"

@@ -24,6 +24,9 @@ run-docker:
 pytest *ARGS:
     poetry run pytest {{ ARGS }}
 
+behave *ARGS:
+    poetry run behave tests/features {{ ARGS }}
+
 # Run test coverage
 coverage:
     poetry run coverage run --source=aeternum --omit="*/__*.py,*/test_*.py" -m pytest

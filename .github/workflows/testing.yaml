@@ -1,4 +1,4 @@
-name: Pytest & Coverage
+name: Run Test Suites
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  run-pytest:
+  run-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,12 +34,17 @@ jobs:
         run: |
           poetry install
 
-      - name: Run tests verbose
+      - name: Run Pytest unit-testing
         run: |
-          just pytest -vv
+          just pytest -vv -rA
 
-  run-coverage:
+      - name: Run Behave feature tests
+        run: |
+          just behave -v
+
+  coverage:
     runs-on: ubuntu-latest
+    needs: run-tests
 
     steps:
       - name: Checkout repository
