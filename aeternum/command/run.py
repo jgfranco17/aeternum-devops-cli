@@ -10,7 +10,7 @@ from aeternum.core.models import ProjectSpec
 logger = logging.getLogger(__name__)
 
 
-@click.command("build")
+@click.command("run")
 @click.option(
     "--file",
     "-f",
@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
     help="Save execution output to file.",
     default=False,
 )
-def build_project(file: str, dry_run: bool, quiet: bool, save_output: bool) -> None:
+def run_scripts(file: str, dry_run: bool, quiet: bool, save_output: bool) -> None:
     """Initialize and build a project from specification file."""
     project = ProjectSpec.load_from_yaml(file)
     logger.info(f"Loaded project: {project.name} {project.version}")

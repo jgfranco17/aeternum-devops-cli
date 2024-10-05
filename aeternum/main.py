@@ -3,9 +3,9 @@ import logging
 import click
 import colorama
 
-from aeternum.command.build import build_project
 from aeternum.command.doctor import doctor
 from aeternum.command.init import init_new_project
+from aeternum.command.run import run_scripts
 from aeternum.core.handler import AeternumCliHandler
 from aeternum.core.output import ColorHandler
 
@@ -49,5 +49,5 @@ def cli(context: click.Context, verbose: int):
 
 
 cli.add_command(doctor)
-cli.add_command(build_project)
+cli.add_command(run_scripts)
 cli.add_command(init_new_project)

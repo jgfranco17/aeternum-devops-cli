@@ -14,7 +14,7 @@ from tests.shared.runner import TestRunner, assert_cli_output
 
 
 @patch("subprocess.run")
-def test_build_success(
+def test_run_success(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     mocker: MockerFixture,
@@ -34,14 +34,14 @@ def test_build_success(
         successful_subprocess_exec,
         successful_subprocess_exec,
     ]
-    result = runner.run_cli(["build"])
+    result = runner.run_cli(["run"])
     assert_cli_output(
         result, ["Build completed for test-project v0.1.0", "Ran 2 automation steps"]
     )
 
 
 @patch("subprocess.run")
-def test_build_step_failure(
+def test_run_step_failure(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     mocker: MockerFixture,
@@ -65,13 +65,13 @@ def test_build_step_failure(
         successful_subprocess_exec,
         unsuccessful_subprocess_exec,
     ]
-    result = runner.run_cli(["build"])
+    result = runner.run_cli(["run"])
     assert result.exit_code == 1, f"Expected exit code 1, got {result.exit_code}"
     assert "FAILED" in result.output, "Summary table did not appear in output"
 
 
 @patch("subprocess.run")
-def test_build_no_test_steps_in_strict_mode(
+def test_run_no_test_steps_in_strict_mode(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     mocker: MockerFixture,
@@ -83,13 +83,13 @@ def test_build_no_test_steps_in_strict_mode(
     invalid_spec_file = load_resources_dir("invalid_files", "aeternum-no-tests.yaml")
     shutil.copy(invalid_spec_file, Path(tmp_path, "aeternum.yaml"))
 
-    result = runner.run_cli(["build"])
+    result = runner.run_cli(["run"])
     assert result.exit_code == 2, f"Expected exit code 2, got {result.exit_code}"
     assert "No test steps found in build stage" in result.stderr
 
 
 @patch("subprocess.run")
-def test_build_invalid_spec_file(
+def test_run_invalid_spec_file(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     mocker: MockerFixture,
@@ -99,13 +99,13 @@ def test_build_invalid_spec_file(
     """Tests aeternum build with non-existent file."""
     monkeypatch.chdir(tmp_path)
 
-    result = runner.run_cli(["build", "-f", "non-existent.yaml"])
+    result = runner.run_cli(["run", "-f", "non-existent.yaml"])
     assert result.exit_code == 1, f"Expected exit code 1, got {result.exit_code}"
     assert "Path 'non-existent.yaml' does not exist" in result.stderr
 
 
 @patch("subprocess.run")
-def test_build_with_log_output_all_steps_completed(
+def test_run_with_log_output_all_steps_completed(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     runner: TestRunner,
@@ -132,7 +132,7 @@ def test_build_with_log_output_all_steps_completed(
     mock_datetime_instance.strftime.return_value = fixed_timestamp
     mock_datetime.now.return_value = mock_datetime_instance
 
-    result = runner.run_cli(["build", "--save-output"])
+    result = runner.run_cli(["run", "--save-output"])
     assert result.exit_code == 0, f"Expected exit code 0, got {result.exit_code}"
     expected_log_filename = "aeternum-execution_2024-08-01_12-34-56.log"
     generated_log_file = Path(tmp_path, expected_log_filename)
@@ -142,7 +142,7 @@ def test_build_with_log_output_all_steps_completed(
 
 
 @patch("subprocess.run")
-def test_build_with_log_output_with_failing_step(
+def test_run_with_log_output_with_failing_step(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     runner: TestRunner,
@@ -173,7 +173,7 @@ def test_build_with_log_output_with_failing_step(
     mock_datetime_instance.strftime.return_value = fixed_timestamp
     mock_datetime.now.return_value = mock_datetime_instance
 
-    result = runner.run_cli(["build", "--save-output"])
+    result = runner.run_cli(["run", "--save-output"])
     assert result.exit_code == 1, f"Expected exit code 1, got {result.exit_code}"
     expected_log_filename = "aeternum-execution_2024-08-01_12-34-56.log"
     generated_log_file = Path(tmp_path, expected_log_filename)
@@ -183,7 +183,7 @@ def test_build_with_log_output_with_failing_step(
 
 
 @patch("subprocess.run")
-def test_build_dry_run_with_log_output_success(
+def test_run_dry_run_with_log_output_success(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
     runner: TestRunner,
@@ -209,7 +209,7 @@ def test_build_dry_run_with_log_output_success(
     mock_datetime_instance = MagicMock()
     mock_datetime_instance.strftime.return_value = fixed_timestamp
     mock_datetime.now.return_value = mock_datetime_instance
-    result = runner.run_cli(["build", "--dry-run", "--save-output"])
+    result = runner.run_cli(["run", "--dry-run", "--save-output"])
     assert_cli_output(
         result, ["Build completed for test-project v0.1.0", "Ran 2 automation steps"]
     )
