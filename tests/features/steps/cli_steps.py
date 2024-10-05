@@ -13,38 +13,6 @@ def step_verify_cli_installation(context: AeternumContext):
     assert result.exit_code == 0, "Aeternum CLI is not installed or is inaccessible"
 
 
-@given('the file "{filename:S}" is present in the current directory')
-def step_assert_file_exists(context: AeternumContext, filename: str):
-    """Assert that the specified file exists.
-
-    Args:
-        filename (str): File path in directory
-    """
-    assert os.path.exists(context.temp_dir, filename), f"File {filename} does not exist"
-
-
-@given('the file "{filename:S}" does not exist')
-def step_assert_file_does_not_exist(context: AeternumContext, filename: str):
-    """Assert that the specified file doesn't exist.
-
-    Args:
-        filename (str): File path in directory
-    """
-    assert os.path.exists(context.temp_dir, filename), f"File {filename} already exists"
-
-
-@given('I create the file "{filename:S}" in the current directory')
-def step_create_file(context: AeternumContext, filename: str):
-    """Creates a temp test file in the current directory.
-
-    Args:
-        filename (str): File to create
-    """
-    test_file = Path(context.temp_dir, filename)
-    assert not test_file.exists(), f"File {filename} already exists"
-    test_file.touch()
-
-
 @when('I run "aeternum {command}"')
 def step_run_cli_command(context: AeternumContext, command: str):
     """Run an Aeternum CLI command.
@@ -89,13 +57,3 @@ def step_impl(context: AeternumContext, expected_exit_code: int):
     assert (
         context.result.exit_code == expected_exit_code
     ), f"Expected exit code {expected_exit_code}, but got {context.result.exit_code}"
-
-
-@then('the file "{filename:S}" was created')
-def step_check_file_exists(context: AeternumContext, filename: str):
-    """Assert that the specified file was created by CLI command.
-
-    Args:
-        filename (str): _description_
-    """
-    assert os.path.exists(filename), f"File {filename} does not exist"
