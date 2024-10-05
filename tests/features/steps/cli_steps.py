@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from behave import given, then, when
 
@@ -11,6 +10,20 @@ def step_verify_cli_installation(context: AeternumContext):
     """Check if the CLI tool is accessible."""
     result = context.runner.run_cli(["--version"])
     assert result.exit_code == 0, "Aeternum CLI is not installed or is inaccessible"
+
+
+@given('the variable "{env_variable:S}" is set to {value:S}')
+def step_set_environment_variable(
+    context: AeternumContext, env_variable: str, value: str
+):
+    """_summary_
+
+    Args:
+        env_variable (str): Environment variable to manipulate
+        value (str): Variable value to set
+    """
+    context.environment_variables.update({env_variable: os.getenv(env_variable)})
+    os.environ[env_variable] = value
 
 
 @when('I run "aeternum {command}"')

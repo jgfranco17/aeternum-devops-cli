@@ -1,3 +1,7 @@
+import os
+import tempfile
+from typing import Dict
+
 from behave.runner import Context
 
 from tests.shared.runner import TestRunner
@@ -18,4 +22,5 @@ class AeternumContext(Context):
 
     cwd: str
     temp_dir: str
+    environment_variables: Dict[str, str]
     runner: TestRunner
