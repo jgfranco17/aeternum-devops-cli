@@ -1,0 +1,61 @@
+name: Integration Test
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.10"
+          - "3.11"
+          - "3.12"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install poetry
+        shell: bash
+        run: |
+          pip install poetry==1.8.3
+
+      - name: Install dependencies
+        run: |
+          poetry install
+
+      - name: Verify build with Python ${{ matrix.python-version }}
+        run: |
+          poetry run aeternum --version
+
+      - name: Verify build compatibility with Python ${{ matrix.python-version }}
+        working-directory: ./trial
+        run: |
+          poetry run aeternum doctor
+
+      - name: Integration test - BUILD
+        run: |
+          poetry run aeternum build -f trial/sample.yaml
+
+      - name: Integration test - INIT
+        run: |
+          poetry run aeternum -vv init -f test.yaml \
+            --name "Test-Project" \
+            --repo-url "www.github.example.com" \
+            --version "0.1.0"
