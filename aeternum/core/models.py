@@ -40,9 +40,10 @@ class StepExecutionResult:
 class AutomationStep(BaseModel):
     name: str
     category: str
-    shell: Optional[str] = Field("/bin/bash")
     command: str
-    args: Optional[List[str]] = None
+    shell: Optional[str] = Field("/bin/bash")
+    working_dir: Optional[Path] = Field(os.path.relpath(str(Path.cwd()), os.getcwd()))
+    args: Optional[List[str]] = []
 
     @field_validator("category")
     def validate_category(cls, v: str) -> str:
@@ -53,12 +54,27 @@ class AutomationStep(BaseModel):
             )
         return v
 
+    @field_validator("working_dir")
+    def validate_working_directory(cls, dir_path: str) -> Path:
+        working_dir_path = Path(dir_path)
+        if not working_dir_path.exists():
+            raise AeternumInputError(
+                f"Working directory provided does not exist: {dir_path}",
+                "Create the directory first, either manually or by a prior step.",
+            )
+        if not working_dir_path.is_dir():
+            raise AeternumValidationError(f"Given path is not a directory: {dir_path}")
+        return working_dir_path
+
     def run(self) -> StepExecutionResult:
         """Run the build commands with a specified shell."""
+
         cmd_exec = get_command_string(self.command, self.args)
         full_cmd = [self.shell, "-c", cmd_exec]
         click.echo(f"Executing command: '{cmd_exec}'")
-        result = subprocess.run(full_cmd, capture_output=True, text=True)
+        result = subprocess.run(
+            full_cmd, capture_output=True, text=True, cwd=self.working_dir
+        )
         return StepExecutionResult(
             name=self.name,
             command_executed=cmd_exec,

@@ -7,16 +7,19 @@ build_stage:
   steps:
     - name: Step 1
       category: build
-      shell: /bin/bash
       command: some-command
+      shell: /bin/bash
+      working_dir: .
       args: []
     - name: Step 2
       category: test
-      shell: /bin/bash
       command: some-command
+      shell: /bin/bash
+      working_dir: .
       args: []
     - name: Step 3
       category: deploy
-      shell: /bin/bash
       command: some-command
+      shell: /bin/bash
+      working_dir: .
       args: []

@@ -9,8 +9,8 @@ build-stage:
     - name: "Install dependencies"
       command: "pip"
       args: ["list"]
+      working_dir: ./aeternum-working-file.yaml
       shell: "/bin/bash"
-      working_dir: .
       category: "build"
 
     - name: "Run tests"

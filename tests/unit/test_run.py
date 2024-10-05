@@ -185,6 +185,46 @@ def test_run_invalid_spec_file(
 
 
 @patch("subprocess.run")
+def test_run_invalid_working_dir(
+    mock_subproc_run: MagicMock,
+    tmp_path: Path,
+    mocker: MockerFixture,
+    runner: TestRunner,
+    monkeypatch: MonkeyPatch,
+) -> None:
+    """Tests aeternum build with non-existent file."""
+    monkeypatch.chdir(tmp_path)
+    invalid_spec_file = load_resources_dir(
+        "invalid_files", "aeternum-invalid-working-dir.yaml"
+    )
+    shutil.copy(invalid_spec_file, tmp_path)
+
+    result = runner.run_cli(["run", "-f", invalid_spec_file])
+    assert result.exit_code == 2, f"Expected exit code 2, got {result.exit_code}"
+    assert "Working directory provided does not exist: non-existent" in result.stderr
+
+
+@patch("subprocess.run")
+def test_run_working_dir_is_file(
+    mock_subproc_run: MagicMock,
+    tmp_path: Path,
+    mocker: MockerFixture,
+    runner: TestRunner,
+    monkeypatch: MonkeyPatch,
+) -> None:
+    """Tests aeternum build with non-existent file."""
+    monkeypatch.chdir(tmp_path)
+    invalid_spec_file = load_resources_dir(
+        "invalid_files", "aeternum-working-file.yaml"
+    )
+    shutil.copy(invalid_spec_file, tmp_path)
+
+    result = runner.run_cli(["run", "-f", invalid_spec_file])
+    assert result.exit_code == 3, f"Expected exit code 2, got {result.exit_code}"
+    assert "Given path is not a directory: aeternum-working-file.yaml" in result.stderr
+
+
+@patch("subprocess.run")
 def test_run_with_log_output_all_steps_completed(
     mock_subproc_run: MagicMock,
     tmp_path: Path,
