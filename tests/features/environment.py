@@ -4,11 +4,14 @@ import tempfile
 
 from behave.runner import Context
 
+from tests.shared.runner import TestRunner
+
 
 def before_scenario(context: Context, scenario: object) -> None:
     """Switch to a temporary directory before each scenario."""
-    context.temp_dir = tempfile.mkdtemp()
     context.cwd = os.getcwd()
+    context.temp_dir = tempfile.mkdtemp(prefix="aeternum")
+    context.runner = TestRunner()
     os.chdir(context.temp_dir)
 
 
