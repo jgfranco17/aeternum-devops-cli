@@ -1,19 +1,14 @@
 import os
 import shutil
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, call, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from pytest import MonkeyPatch, raises
 from pytest_mock import MockerFixture
 
-from aeternum.command.doctor import (
-    AeternumRequirement,
-    ExpectedBinary,
-    ExpectedFile,
-    validate_requirements,
-)
-from tests.test_helpers.file_utils import load_resources_dir
-from tests.test_helpers.runner import TestRunner, assert_cli_output
+from aeternum.command.doctor import ExpectedBinary, ExpectedFile, validate_requirements
+from tests.shared.file_utils import load_resources_dir
+from tests.shared.runner import TestRunner, assert_cli_output
 
 
 def __new_mock_subprocess(name: str, exit_code: int, output: str) -> Mock:

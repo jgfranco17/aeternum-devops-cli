@@ -5,12 +5,12 @@ from unittest.mock import MagicMock, Mock, patch
 from pytest import MonkeyPatch
 from pytest_mock import MockerFixture
 
-from tests.test_helpers.file_utils import (
+from tests.shared.file_utils import (
     assert_file_content,
     assert_files_created,
     load_resources_dir,
 )
-from tests.test_helpers.runner import TestRunner, assert_cli_output
+from tests.shared.runner import TestRunner, assert_cli_output
 
 
 @patch("subprocess.run")

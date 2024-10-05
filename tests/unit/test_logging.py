@@ -1,9 +1,8 @@
 from io import StringIO
-from unittest.mock import patch
 
 from colorama import Fore, Style
 
-from tests.conftest import MockLogger
+from tests.unit.conftest import MockLogger
 
 
 def test_color_handler_debug(logger: MockLogger):

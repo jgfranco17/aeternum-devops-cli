@@ -1,6 +1,3 @@
-import os
-
-from pydantic import ValidationError
 from pytest import raises
 
 from aeternum.core.errors import AeternumInputError, AeternumValidationError
@@ -10,7 +7,7 @@ from aeternum.core.models import (
     BuildStage,
     ProjectSpec,
 )
-from tests.test_helpers.file_utils import load_resources_dir
+from tests.shared.file_utils import load_resources_dir
 
 
 def test_load_from_yaml_success():

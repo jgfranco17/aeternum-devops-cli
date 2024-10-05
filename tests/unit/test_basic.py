@@ -1,4 +1,4 @@
-from tests.test_helpers.runner import TestRunner
+from tests.shared.runner import TestRunner
 
 
 def test_help_message_sane(runner: TestRunner) -> None:

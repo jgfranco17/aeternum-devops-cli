@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from aeternum.core.output import ColorHandler
-from tests.test_helpers.runner import TestRunner
+from tests.shared.runner import TestRunner
 
 
 class MockLogger:
