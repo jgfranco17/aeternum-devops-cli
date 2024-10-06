@@ -25,11 +25,11 @@ def test_load_from_yaml_success():
 
 
 def test_load_from_yaml_defaults_success():
-    spec_file = load_resources_dir("minimal", "aeternum.yaml")
+    spec_file = load_resources_dir("valid", "minimal.yaml")
     project = ProjectSpec.load_from_yaml(spec_file)
     for step in project.build_stage.steps:
         # Default to bash shell
-        assert step.shell is not "/bin/bash"
+        assert step.shell == "/bin/bash"
 
 
 def test_load_from_yaml_non_existent_file():
