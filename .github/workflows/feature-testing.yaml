@@ -1,0 +1,62 @@
+name: Run Feature Tests
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-feature-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+
+      - name: Setup Python workspace
+        uses: ./.github/actions/setup-python-workspace
+        with:
+          python-version: "3.10"
+
+      - name: Run Behave feature tests
+        run: |
+          just behave -vv -s --junit --junit-directory ./reports/
+
+      - name: Upload JUnit output as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: junit-reports
+          path: ./reports/
+
+  reporting:
+    runs-on: ubuntu-latest
+    needs: run-feature-tests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - uses: ./.github/actions/setup-python-workspace
+        with:
+          python-version: "3.10"
+
+      - name: Download JUnit artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: junit-reports
+          path: ./reports/
+
+      - name: Generate report
+        shell: bash
+        run: |
+          python3 ./tools/parse_junit.py
+
+      - name: Create GHA job summary
+        if: success()
+        run: |
+          echo "# Feature Test Report" >> $GITHUB_STEP_SUMMARY
+          cat ./behave_report.md >> $GITHUB_STEP_SUMMARY
