@@ -7,7 +7,7 @@ build-stage:
   steps:
     - name: "Install dependencies"
       command: "pip"
-      args: ["show"]
+      args: ["list"]
       category: "build"
 
     - name: "Run tests"

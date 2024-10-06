@@ -24,3 +24,4 @@ class AeternumContext(Context):
     temp_dir: str
     environment_variables: Dict[str, str]
     runner: TestRunner
+    captured_variables: Dict[str, str]

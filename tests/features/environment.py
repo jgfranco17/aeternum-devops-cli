@@ -10,11 +10,13 @@ def before_all(context: AeternumContext) -> None:
     """Configure all common fixtures."""
     context.runner = TestRunner()
     context.environment_variables = dict()
+    context.captured_variables = dict()
     print("Ready to run Aeternum feature tests!")
 
 
 def before_scenario(context: AeternumContext, scenario: object) -> None:
     """Switch to a temporary directory before each scenario."""
+    context.captured_variables = dict()
     context.cwd = os.getcwd()
     context.temp_dir = tempfile.mkdtemp(prefix="aeternum")
     os.chdir(context.temp_dir)

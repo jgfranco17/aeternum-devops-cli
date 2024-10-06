@@ -1,7 +1,12 @@
 import os
+from unittest.mock import patch
 
 from behave import given, then, when
 
+from tests.features.steps.utils import (
+    find_captured_variables,
+    get_successful_subprocess_mock,
+)
 from tests.features.stubs import AeternumContext
 
 
@@ -28,12 +33,22 @@ def step_set_environment_variable(
 
 @when('I run "aeternum {command}"')
 def step_run_cli_command(context: AeternumContext, command: str):
-    """Run an Aeternum CLI command.
+    """Run an Aeternum CLI command with.
+
+    Performs variable substitution if any variables were captured prior.
 
     Args:
         command (str): Command string to execute
     """
-    context.result = context.runner.run_cli(command.split())
+    captured_variables = find_captured_variables(command)
+    exec_command = command
+    if captured_variables:
+        for var in captured_variables:
+            value = context.captured_variables.get(var, None)
+            if value:
+                exec_command = command.replace(f"$[{var}]", value)
+                print(exec_command, f"$[{var}]", value, sep=" | ")
+    context.result = context.runner.run_cli(exec_command.split())
 
 
 @then('the stdout should contain "{expected_output}"')

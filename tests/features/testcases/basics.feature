@@ -7,7 +7,7 @@ Feature: Aeternum CLI initialization
         Examples: Commands
             | command |
             | doctor  |
-            | run   |
+            | run     |
             | init    |
 
     Scenario: Running an invalid command

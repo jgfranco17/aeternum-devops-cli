@@ -49,6 +49,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 .pytest_cache
+reports/
 
 # pyenv
 .python-version
