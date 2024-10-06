@@ -46,6 +46,7 @@ def step_copy_reference_file(context: AeternumContext, filepath: str, variable: 
 
     Args:
         filepath (str): Path to the reference file
+        variable (str): Variable to capture the path
     """
     reference_file = load_resources_dir(*filepath.split(os.sep))
     assert (

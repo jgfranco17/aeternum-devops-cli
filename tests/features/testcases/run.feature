@@ -8,9 +8,9 @@ Feature: Aeternum CLI Run
         When I run "aeternum run -f $[spec_file] --dry-run"
         Then the CLI should return exit code 0
         Examples: Commands
-            | file                 |
-            | valid/aeternum.yaml  |
-            | valid/minimal.yaml   |
+            | file                |
+            | valid/aeternum.yaml |
+            | valid/minimal.yaml  |
 
     Scenario: Executing the run command
         Given I have reference file "valid/aeternum.yaml" captured as "spec_file"
