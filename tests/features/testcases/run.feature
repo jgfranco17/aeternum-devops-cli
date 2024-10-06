@@ -11,3 +11,11 @@ Feature: Aeternum CLI Run
             | file                 |
             | valid/aeternum.yaml  |
             | valid/minimal.yaml   |
+
+    Scenario: Executing the run command
+        Given I have reference file "valid/aeternum.yaml" captured as "spec_file"
+        And subprocess calls are mocked
+        When I run "aeternum run -f $[spec_file]"
+        Then the CLI should return exit code 0
+        And the subprocess was called
+        And the stdout should contain "Build completed for test-project v0.1.0"

@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+from unittest.mock import patch
 
 from tests.features.stubs import AeternumContext
 from tests.shared.runner import TestRunner
@@ -26,5 +27,7 @@ def after_scenario(context: AeternumContext, scenario: object) -> None:
     """Reset to the original directory after each scenario."""
     os.chdir(context.cwd)
     shutil.rmtree(context.temp_dir)
+    if hasattr(context, "mock_subprocess"):
+        patch.stopall()  # This will stop all active patches
     for variable, original_value in context.environment_variables.items():
         os.environ[variable] = original_value
