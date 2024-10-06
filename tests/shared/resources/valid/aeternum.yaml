@@ -4,12 +4,12 @@ version: "0.1.0"
 build-stage:
   strategy:
     strict: true
+    shell: "/bin/bash"
 
   steps:
     - name: "Install dependencies"
       command: "pip"
       args: ["list"]
-      shell: "/bin/bash"
       working_dir: .
       category: "build"
 
@@ -17,4 +17,3 @@ build-stage:
       category: "test"
       command: "pytest"
       args: ["-v"]
-      shell: "/bin/zsh"

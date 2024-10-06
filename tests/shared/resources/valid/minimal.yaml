@@ -4,6 +4,7 @@ version: "0.1.0"
 build-stage:
   strategy:
     strict: true
+    shell: /bin/bash
   steps:
     - name: "Install dependencies"
       command: "pip"

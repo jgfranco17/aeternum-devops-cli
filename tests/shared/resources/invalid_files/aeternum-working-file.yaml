@@ -4,17 +4,15 @@ version: "0.1.0"
 build-stage:
   strategy:
     strict: true
-
+    shell: "/bin/bash"
   steps:
     - name: "Install dependencies"
       command: "pip"
       args: ["list"]
       working_dir: ./aeternum-working-file.yaml
-      shell: "/bin/bash"
       category: "build"
 
     - name: "Run tests"
       category: "test"
       command: "pytest"
       args: ["-v"]
-      shell: "/bin/zsh"

@@ -1,5 +1,6 @@
 Project: test-project
 Version: 0.1.0
+Shell: /bin/bash
 Execution duration: 0.500s
 
 Step Summary:
@@ -8,7 +9,7 @@ FAILED: 1
 SKIPPED: 0
 
 Build Output (STANDARD):
- #   NAME                  SHELL      COMMAND    STATUS
----  --------------------  ---------  ---------  ---------
- 1   Install dependencies  /bin/bash  pip list   COMPLETED
- 2   Run tests             /bin/zsh   pytest -v  FAILED
+ #   NAME                  COMMAND    STATUS
+---  --------------------  ---------  ---------
+ 1   Install dependencies  pip list   COMPLETED
+ 2   Run tests             pytest -v  FAILED

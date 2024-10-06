@@ -18,18 +18,16 @@ def test_load_from_yaml_success():
     assert project.repo_url == "https://github.com/some-user/my-test-project"
     assert project.version == "0.1.0"
     assert project.strict_build is True
+    assert project.shell == "/bin/bash"
     for step in project.build_stage.steps:
         assert isinstance(step, AutomationStep)
         assert step.category in ["build", "test", "deploy"]
-        assert step.shell is not None
 
 
 def test_load_from_yaml_defaults_success():
     spec_file = load_resources_dir("valid", "minimal.yaml")
     project = ProjectSpec.load_from_yaml(spec_file)
-    for step in project.build_stage.steps:
-        # Default to bash shell
-        assert step.shell == "/bin/bash"
+    assert project.shell == "/bin/bash"
 
 
 def test_load_from_yaml_non_existent_file():

@@ -41,7 +41,6 @@ class AutomationStep(BaseModel):
     name: str
     category: str
     command: str
-    shell: Optional[str] = Field("/bin/bash")
     working_dir: Optional[Path] = Field(os.path.relpath(str(Path.cwd()), os.getcwd()))
     args: Optional[List[str]] = []
 
@@ -66,11 +65,11 @@ class AutomationStep(BaseModel):
             raise AeternumValidationError(f"Given path is not a directory: {dir_path}")
         return working_dir_path
 
-    def run(self) -> StepExecutionResult:
+    def run(self, shell: str) -> StepExecutionResult:
         """Run the build commands with a specified shell."""
 
         cmd_exec = get_command_string(self.command, self.args)
-        full_cmd = [self.shell, "-c", cmd_exec]
+        full_cmd = [shell, "-c", cmd_exec]
         click.echo(f"Executing command: '{cmd_exec}'")
         result = subprocess.run(
             full_cmd, capture_output=True, text=True, cwd=self.working_dir
@@ -93,6 +92,7 @@ class AutomationStep(BaseModel):
 
 class AutomationStrategy(BaseModel):
     strict: bool = Field(True)
+    shell: Optional[str] = Field("/bin/bash")
 
 
 class ValidationSummary(BaseModel):
@@ -158,11 +158,30 @@ class ProjectSpec(BaseModel):
         """
         return self.build_stage.strategy.strict
 
+    @property
+    def shell(self) -> str:
+        """Get build-strategy shell to use for executing steps.
+
+        Returns:
+            str: Shell path
+        """
+        return self.build_stage.strategy.shell
+
     @classmethod
     def load_from_inputs(
         cls, name: str, repo_url: str, version: str, strict: bool
     ) -> "ProjectSpec":
-        """Build a ProjectSpec from inputs."""
+        """Build a ProjectSpec from inputs.
+
+        Args:
+            name (str): Project name
+            repo_url (str): Online repository URL
+            version (str): Semver version of project
+            strict (bool): If True, project spec must contain test steps
+
+        Returns:
+            ProjectSpec: Project manifest
+        """
         default_steps = [
             AutomationStep(
                 name=f"Step {idx}",
@@ -186,6 +205,11 @@ class ProjectSpec(BaseModel):
         )
 
     def write(self, filepath: Path) -> None:
+        """Write project specification to file.
+
+        Args:
+            filepath (Path): Output path to write to
+        """
         full_filepath = filepath.with_suffix(".yaml").resolve()
         with open(full_filepath, "w") as file:
             yaml.dump(
@@ -200,7 +224,11 @@ class ProjectSpec(BaseModel):
 
     @classmethod
     def load_from_yaml(cls, filepath: Path) -> "ProjectSpec":
-        """Build a ProjectSpec from a YAML file."""
+        """Build a ProjectSpec from a YAML file.
+
+        Args:
+            filepath (Path): Path of file to read from
+        """
         try:
             data = None
             full_filepath = Path(os.getcwd(), filepath)
@@ -225,8 +253,13 @@ class ProjectSpec(BaseModel):
         """Write execution log to file.
 
         Args:
-            steps (List[AutomationStep]): Automation steps executed
+            steps (List[AutomationStep]):
             duration (float): Total dura
+
+        Args:
+            steps (List[AutomationStep]): Automation steps executed
+            duration (float): Total execution duration
+            dry_run_mode (bool): Whether the execution was run in dry-run mode
         """
         timestamp = dt.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name = f"aeternum-execution_{timestamp}"
@@ -254,10 +287,10 @@ class ProjectSpec(BaseModel):
                 if not step.args
                 else f"{step.command} {' '.join(step.args)}"
             )
-            log_summary_rows.append([idx, step.name, step.shell, command, status])
+            log_summary_rows.append([idx, step.name, command, status])
             step_counts_by_status[status] += 1
 
-        log_summary_headers = ["#", "NAME", "SHELL", "COMMAND", "STATUS"]
+        log_summary_headers = ["#", "NAME", "COMMAND", "STATUS"]
         step_summary_report = tabulate(
             log_summary_rows,
             headers=log_summary_headers,
@@ -268,6 +301,7 @@ class ProjectSpec(BaseModel):
         with open(str(output_file.resolve()), "w") as file:
             file.write(f"Project: {self.name}\n")
             file.write(f"Version: {self.version}\n")
+            file.write(f"Shell: {self.shell}\n")
             file.write(f"Execution duration: {duration:.3f}s\n\n")
             file.write("Step Summary:\n")
             for status, count in step_counts_by_status.items():
@@ -319,7 +353,7 @@ class ProjectSpec(BaseModel):
                 )
                 if step.should_run(include_filters, exclude_filters):
                     if not dry_run_mode:
-                        result = step.run()
+                        result = step.run(self.shell)
                         if result.exit_code != 0:
                             icon = f"{Fore.RED}{Style.BRIGHT}{StepExecutionStatus.FAILED}{Style.RESET_ALL}"
                             summary.append([idx, step.name, icon])

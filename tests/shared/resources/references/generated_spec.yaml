@@ -4,22 +4,20 @@ version: 0.1.0
 build_stage:
   strategy:
     strict: true
+    shell: /bin/bash
   steps:
     - name: Step 1
       category: build
       command: some-command
-      shell: /bin/bash
       working_dir: .
       args: []
     - name: Step 2
       category: test
       command: some-command
-      shell: /bin/bash
       working_dir: .
       args: []
     - name: Step 3
       category: deploy
       command: some-command
-      shell: /bin/bash
       working_dir: .
       args: []
