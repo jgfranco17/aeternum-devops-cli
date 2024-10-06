@@ -26,10 +26,6 @@ jobs:
         run: |
           just pytest -vv -rA
 
-      - name: Run Behave feature tests
-        run: |
-          just behave -vv -s --junit --junit-directory ./reports/
-
   coverage:
     runs-on: ubuntu-latest
     needs: run-unit-tests

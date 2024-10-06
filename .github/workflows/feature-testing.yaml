@@ -24,7 +24,7 @@ jobs:
 
       - name: Run Behave feature tests
         run: |
-          just behave -vv -s --junit --junit-directory ./reports/
+          just behave -vv --junit --junit-directory ./reports/
 
       - name: Upload JUnit output as artifact
         uses: actions/upload-artifact@v3
